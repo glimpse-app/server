@@ -1,4 +1,10 @@
+# nim directories
 nimcache/
 nimblecache/
 htmldocs/
+
+# executables
 server
+
+# file uploads directory
+uploads/

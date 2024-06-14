@@ -1,4 +1,4 @@
-import jester, json, strutils
+import jester, json, strutils, os
 
 routes:
   get "/":
@@ -6,7 +6,7 @@ routes:
 
   get "/api":
     
-    # import this from db 
+    # TODO: import this from db 
     var indexedImages = 
       """[
         {"path": "/photos/image1.png",        "tags": ["monochrome", "filtered", "waterfall"]}, 
@@ -20,7 +20,7 @@ routes:
 
   post "/api/@operation":
     
-    # import this from db 
+    # TODO: import this from db 
     var indexedImages = 
       """[
         {"path": "/photos/image1.png",        "tags": ["monochrome", "filtered", "waterfall"]}, 
@@ -43,6 +43,19 @@ routes:
       of "getTags":
         let index = parseInt(@"index")
         resp indexedImages[index]["tags"]
+
+      of "upload":
+        let fileData = request.formData["image"].body
+        let fileName = request.formData["image"].fields["filename"]
+        
+        let directory = "uploads"
+        if not dirExists(directory):
+          createDir(directory)
+        
+        writeFile("uploads/" & fileName, fileData)
+        # TODO: add image and tags if given to db
+
+        resp "Uploaded successfully!"
 
       else:
         resp indexedImages
