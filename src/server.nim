@@ -1,5 +1,7 @@
 import jester, json, strutils, os
 
+# TODO: build API documentation
+
 routes:
   get "/":
     resp "Hello, World!"
