@@ -8,3 +8,6 @@ server
 
 # file uploads directory
 uploads/
+
+# database
+*.db
