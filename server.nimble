@@ -1,6 +1,6 @@
-version       = ""
-author        = ""
-description   = ""
+version       = "0.0.1"
+author        = "Array in a Matrix"
+description   = "Glimpse backend server."
 license       = "AGPL-3.0-or-later"
 
 bin           = @["server"]
