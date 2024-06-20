@@ -1,4 +1,40 @@
-import jester, json, strutils, os
+import std/[strutils, os, logging, random, base64]
+import jester
+import norm/[model, sqlite]
+
+addHandler newConsoleLogger(fmtStr = "")
+
+type
+  File* = ref object of Model
+    owner*: User
+    path*: string
+    # tags*: Option[seq[string]]
+  User* = ref object of Model
+    username*, password*, token*: string
+    # email*: string
+
+proc generateToken(length: int = 40): string =
+  for _ in 0..length:
+    add(result, char(rand(int('A') .. int('z'))))
+  encode(result, safe = true)
+
+# func validateToken(db: DbConn, user: User, token: string): bool =
+#   db.select()
+
+proc newUser*(username: string = "", password: string = ""): User =
+  User(username: username, password: password, token: generateToken())
+
+# func newFile*(user: User, path: string, tags = none seq[string]): File =
+#   File(owner: user, path: path, tags: tags)
+
+func newFile*(user: User = newUser(), path: string = ""): File =
+  File(owner: user, path: path)
+
+
+let db* = open("storage.db", "", "", "")
+db.createTables(User())
+# db.createTables(newFile())
+
 
 # TODO: build API documentation
 
@@ -8,45 +44,41 @@ routes:
 
   get "/api":
     
-    # TODO: import this from db 
-    var indexedImages = 
-      """[
-        {"path": "/photos/image1.png",        "tags": ["monochrome", "filtered", "waterfall"]}, 
-        {"path": "/photos/image2.jxl",        "tags": ["wedding", "family"]},
-        {"path": "/wallpapers/france.jpeg",   "tags": ["eiffel tower", "paris", "france"]},
-        {"path": "/turtle.gif",               "tags": ["turtle", "grass", "wildlife"]},
-        {"path": "/car.png",                  "tags": ["road", "lights", "bridge", "neon", "signs", "car"]},
-      ]""".parseJson
+    # TODO: import this from db, export as JSON
 
-    resp indexedImages
+    resp "JSON HERE"
 
   post "/api/@operation":
-    
-    # TODO: import this from db 
-    var indexedImages = 
-      """[
-        {"path": "/photos/image1.png",        "tags": ["monochrome", "filtered", "waterfall"]}, 
-        {"path": "/photos/image2.jxl",        "tags": ["wedding", "family"]},
-        {"path": "/wallpapers/france.jpeg",   "tags": ["eiffel tower", "paris", "france"]},
-        {"path": "/turtle.gif",               "tags": ["turtle", "grass", "wildlife"]},
-        {"path": "/car.png",                  "tags": ["road", "lights", "bridge", "neon", "signs", "car"]},
-      ]""".parseJson
+
+    # TODO: import this from db, export as JSON
 
     case @"operation":
     
+      of "register":
+        var user = newUser(@"username", @"password")
+        db.insert(user)
+        resp "Registered \"" & user.username & "\" successfully!\n Token: " & user.token
+
       of "getItem":
-        let index = parseInt(@"index")
-        resp indexedImages[index]
+        # let index = parseInt(@"index")
+        # db.select(pee, "File.path = ?", "/car.png")
+        resp "JSON HERE indexedImages[index]"
 
       of "getPath":
-        let index = parseInt(@"index")
-        resp indexedImages[index]["path"]
+        # let index = parseInt(@"index")
+        resp """JSON HERE indexedImages[index]["path"]"""
 
       of "getTags":
-        let index = parseInt(@"index")
-        resp indexedImages[index]["tags"]
+        # let index = parseInt(@"index")
+        resp """indexedImages[index]["tags"]"""
 
       of "upload":
+        var user = newUser()
+        try:
+          db.select(user, "token = ?", request.formData["token"].body)
+        except:
+          resp "Upload failed!"
+        
         let fileData = request.formData["image"].body
         let fileName = request.formData["image"].fields["filename"]
         
@@ -54,10 +86,8 @@ routes:
         if not dirExists(directory):
           createDir(directory)
         
-        writeFile("uploads/" & fileName, fileData)
-        # TODO: add image and tags if given to db
-
+        writeFile("uploads/" & fileName, fileData) # TODO: nest dir for each user
         resp "Uploaded successfully!"
 
       else:
-        resp indexedImages
+        resp "SOMETHING HERE"
