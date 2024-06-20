@@ -78,15 +78,15 @@ routes:
           db.select(user, "token = ?", request.formData["token"].body)
         except:
           resp "Upload failed!"
+
+        let fileData = request.formData["file"].body
+        let fileName = request.formData["file"].fields["filename"]
         
-        let fileData = request.formData["image"].body
-        let fileName = request.formData["image"].fields["filename"]
-        
-        let directory = "uploads"
+        let directory = "uploads/" & user.username & "/"
         if not dirExists(directory):
           createDir(directory)
         
-        writeFile("uploads/" & fileName, fileData) # TODO: nest dir for each user
+        writeFile(directory & fileName, fileData)
         resp "Uploaded successfully!"
 
       else:
