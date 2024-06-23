@@ -29,6 +29,7 @@ proc newUser(username: string = "", email: string = "", password: string = ""): 
 func newFile(user: User = newUser(), path: string = "", tags: string = ""): File =
   File(owner: user, path: path, tags: tags)
 
+#? Using sqlite as it makes setup faster. Once project is stable enough this will switch to postgresql.
 let db = open("storage.db", "", "", "")
 db.createTables(newFile())
 
@@ -51,7 +52,7 @@ routes:
     case @"operation":
     
       of "register":
-        var user = newUser(@"username", @"password")
+        var user = newUser(@"username", @"password") # TODO: check if username is unique and sanitize user inputs
         db.insert(user)
         resp "Registered \"" & user.username & "\" successfully!\n Token: " & user.token
 
@@ -89,7 +90,7 @@ routes:
         let directory = "uploads/" & user.username & "/"
         if not dirExists(directory):
           createDir(directory)
-        
+        # TODO: index uploaded files into db using a table for files
         writeFile(directory & fileName, fileData)
         resp "Uploaded successfully!"
 
