@@ -82,8 +82,12 @@ routes:
         
         let fileData = request.formData["file"].body
         let fileName = request.formData["file"].fields["filename"]
-        let fileTags = request.formData["tags"].body # TODO: make tags optional
-
+        var fileTags: string 
+        try: # I hate this 
+          fileTags = request.formData["tags"].body 
+        except:
+          fileTags = "[]"
+        
         var file = newFile(user, fileName, fileTags)
         db.insert(file)
 
