@@ -1,4 +1,5 @@
-import std/[strutils, os, logging, random, base64]
+# import libs
+import std/[strutils, os, logging, random, base64, with]
 import jester
 import norm/[model, sqlite]
 
@@ -6,97 +7,146 @@ addHandler newConsoleLogger(fmtStr = "")
 
 # TODO: create new tags type which is a string which is used to deserialize into a json for requests? 'import std/marshal' when needed
 
+# file objects are owned by a user
 type
   File = ref object of Model
     owner: User
     path: string
     tags: string #? This is a temporary hack should be of type `tags: seq[string]` instead
   User = ref object of Model
-    username, email, password, token: string
+    username, email, password, token: string # username, email and token should be unique
 
-proc generateToken(length: int = 40): string =
+# creates a url safe login token
+# TODO: make sure this is secure + hash this maybe?
+proc generateToken(username: string = "", length: int = 20): string =
   for _ in 0..length:
-    add(result, char(rand(int('A') .. int('z'))))
+    with result:
+      add username
+      add char(rand(int('A') .. int('z')))
   encode(result, safe = true)
 
-# func validateToken(db: DbConn, user: User, token: string): bool =
-#   db.select()
 
+# creates a new user object and sets default values, recommended by the norm documentation 
 proc newUser(username: string = "", email: string = "", password: string = ""): User =
-  User(username: username, password: password, token: generateToken())
+  User(username: username, email: email, password: password, token: generateToken(username))
 
-# func newFile(user: User = newUser(), path: string = "", tags: seq[string] = @[""]): File =
+# creates a new file object and sets default values, recommended by the norm documentation 
 func newFile(user: User = newUser(), path: string = "", tags: string = ""): File =
   File(owner: user, path: path, tags: tags)
 
-#? Using sqlite as it makes setup faster. Once project is stable enough this will switch to postgresql.
+# checks if the provided token exists in the database
+proc validToken(db: DbConn, user: var User, token: string): bool =
+  try:
+    db.select(user, "token = ?", token)
+    return true
+  except NotFoundError:
+    return false
+
+# using sqlite as it makes setup faster
+# once project is stable enough this will switch to postgresql
 let db = open("storage.db", "", "", "")
-db.createTables(newFile())
+db.createTables(newFile()) # file objects require a user object, thus a tables for both are created
 
 # TODO: build API documentation
 
 routes:
   get "/":
-    resp "Hello, World!"
+    resp "Hello, World!" # idk what to put here
 
   get "/api":
-    
-    # TODO: import this from db, export as JSON
-
-    resp "JSON HERE"
+    resp "Hello, World!" # idk what to put here
 
   post "/api/@operation":
 
-    # TODO: import this from db, export as JSON
-
     case @"operation":
     
+      #? endpoint POST `/api/register`
+      #[ request parameters: 
+        username  -  string   -  required
+        email     -  string   -  required
+        password  -  string   -  required
+      ]#
       of "register":
-        var user = newUser(@"username", @"password") # TODO: check if username is unique and sanitize user inputs
-        db.insert(user)
-        resp "Registered \"" & user.username & "\" successfully!\n Token: " & user.token
+        # creates new user with provided info
+        # TODO: sanitization + check if username and email are unique
+        if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or @"password".isEmptyOrWhitespace():
+          resp "Registeration failed! A none empty username, email and password are requied!"
 
+        var user = newUser(@"username", @"email", @"password")
+        db.insert(user)
+        resp user.token
+
+      #? endpoint POST `/api/login`
+      #[ request parameters: 
+        ???
+      ]#
       # of "login":
         # TODO: replace old token with new provided one after successful login
-      #   resp "Logined as \"" & user.username & "\" successfully!\n Token: " & user.token
+      #   resp user.token
 
+      #? endpoint POST `/api/getItem`
+      #[ request parameters: 
+        ???
+      ]#
       of "getItem":
         # let index = parseInt(@"index")
-        # db.select(pee, "File.path = ?", "/car.png")
+        # db.select(file, "File.path = ?", "/car.png")
         resp "JSON HERE indexedImages[index]"
 
+      #? endpoint POST `/api/getPath`
+      #[ request parameters: 
+        ???
+      ]#
       of "getPath":
         # let index = parseInt(@"index")
         resp """JSON HERE indexedImages[index]["path"]"""
 
+      #? endpoint POST `/api/getTags`
+      #[ request parameters: 
+        ???
+      ]#
       of "getTags":
         # let index = parseInt(@"index")
         resp """indexedImages[index]["tags"]"""
 
+      #? endpoint POST `/api/upload`
+      #[ request parameters: 
+        file   -   string/binary   -  required
+        token  -   string          -  required
+        tags   -   seq             -  optional
+      ]#
       of "upload":
+
+        # fills the new `user` var with saved user data from database
         var user = newUser()
-        try: # TODO: turn this into validateToken() returning a bool
-          db.select(user, "token = ?", request.formData["token"].body)
-        except NotFoundError:
-          resp "Upload failed!"
+        if not db.validToken(user, request.formData["token"].body):
+          resp "Upload failed, Invalid token!"
         
+        # pull request form data arguments 
         let fileData = request.formData["file"].body
         let fileName = request.formData["file"].fields["filename"]
         var fileTags: string
-        try: #? this is a hack, I hate this 
+
+        # this is a hack, I hate this 
+        try:
           fileTags = request.formData["tags"].body 
         except KeyError:
           fileTags = "[]"
         
+        # create new file object
         var file = newFile(user, fileName, fileTags)
         db.insert(file)
 
+        # create needed directories if they don't exist already
         let directory = "uploads/" & user.username & "/"
         if not dirExists(directory):
           createDir(directory)
+        
         # TODO: index uploaded files into db using a table for files
+        
+        # write the file from memory
         writeFile(directory & fileName, fileData)
         resp "Uploaded successfully!"
 
       else:
-        resp "SOMETHING HERE"
+        resp "Invalid operation!"
