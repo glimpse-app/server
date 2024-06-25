@@ -10,7 +10,7 @@ type
   File = ref object of Model
     owner: User
     path: string
-    tags: string # tags: seq[string]
+    tags: string #? This is a temporary hack should be of type `tags: seq[string]` instead
   User = ref object of Model
     username, email, password, token: string
 
@@ -82,10 +82,10 @@ routes:
         
         let fileData = request.formData["file"].body
         let fileName = request.formData["file"].fields["filename"]
-        var fileTags: string 
-        try: # I hate this 
+        var fileTags: string
+        try: #? this is a hack, I hate this 
           fileTags = request.formData["tags"].body 
-        except:
+        except KeyError:
           fileTags = "[]"
         
         var file = newFile(user, fileName, fileTags)
