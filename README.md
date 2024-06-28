@@ -7,7 +7,7 @@ This is the Glimpse API server.
 Install needed libraries:
 
 ```sh
-nimble install jester norm
+nimble install jester norm checksums
 ```
 
 Compile and run:
