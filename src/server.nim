@@ -1,7 +1,8 @@
 # import libs
-import std/[strutils, os, logging, random, base64, with]
+import std/[strutils, os, logging, random, with, times]
 import jester
 import norm/[model, sqlite]
+import checksums/sha3
 
 addHandler newConsoleLogger(fmtStr = "")
 
@@ -19,17 +20,25 @@ type
 # creates a url safe login token
 # TODO: make sure this is secure + hash this maybe?
 # https://stackoverflow.com/questions/41432816/generate-totally-unique-token-that-has-never-been-used-using-php
-proc generateToken(username: string = "", length: int = 20): string =
-  for _ in 0..length:
-    with result:
-      add username
-      add char(rand(int('A') .. int('z')))
-  encode(result, safe = true)
+# proc generateToken(username: string = "", length: int = 20): string =
+#   for _ in 0..length:
+#     with result:
+#       add username
+#       add char(rand(int('A') .. int('z')))
+#   encode(result, safe = true)
 
+proc generateToken(username: string = ""): string =
+  randomize()
+  with result:
+    add $getTime().nanosecond()
+    add $rand(1_000_000_000)
+    add username
+    add $(getTime().toUnix())
+  $Sha3_512.secureHash(result)
 
 # creates a new user object and sets default values, recommended by the norm documentation 
 proc newUser(username: string = "", email: string = "", password: string = ""): User =
-  User(username: username, email: email, password: password, token: generateToken())
+  User(username: username, email: email, password: password, token: generateToken(username))
 
 # creates a new file object and sets default values, recommended by the norm documentation 
 func newFile(user: User = newUser(), path: string = "", tags: string = ""): File =
@@ -44,7 +53,7 @@ proc validToken(db: DbConn, user: var User, token: string): bool =
     return false
 
 proc genNewToken(db: DbConn, user: var User) =
-  user.token = generateToken()
+  user.token = generateToken(user.username)
   db.update(user)
 
 # using sqlite as it makes setup faster
