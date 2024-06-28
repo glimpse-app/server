@@ -18,6 +18,7 @@ type
 
 # creates a url safe login token
 # TODO: make sure this is secure + hash this maybe?
+# https://stackoverflow.com/questions/41432816/generate-totally-unique-token-that-has-never-been-used-using-php
 proc generateToken(username: string = "", length: int = 20): string =
   for _ in 0..length:
     with result:
@@ -28,7 +29,7 @@ proc generateToken(username: string = "", length: int = 20): string =
 
 # creates a new user object and sets default values, recommended by the norm documentation 
 proc newUser(username: string = "", email: string = "", password: string = ""): User =
-  User(username: username, email: email, password: password, token: generateToken(username))
+  User(username: username, email: email, password: password, token: generateToken())
 
 # creates a new file object and sets default values, recommended by the norm documentation 
 func newFile(user: User = newUser(), path: string = "", tags: string = ""): File =
@@ -41,6 +42,10 @@ proc validToken(db: DbConn, user: var User, token: string): bool =
     return true
   except NotFoundError:
     return false
+
+proc genNewToken(db: DbConn, user: var User) =
+  user.token = generateToken()
+  db.update(user)
 
 # using sqlite as it makes setup faster
 # once project is stable enough this will switch to postgresql
@@ -77,12 +82,35 @@ routes:
         resp user.token
 
       #? endpoint POST `/api/login`
-      #[ request parameters: 
-        ???
+      #[ request parameters:
+        token     -  string   -  required
+                      OR
+        username  -  string   -  required
+        password  -  string   -  required
       ]#
-      # of "login":
-        # TODO: replace old token with new provided one after successful login
-      #   resp user.token
+      of "login":
+        # generates a new login token after signin
+        var user = newUser()
+        
+        if not @"token".isEmptyOrWhitespace():
+          
+          if not db.validToken(user, @"token"):
+            resp "Login failed, Invalid token!"
+          
+          db.genNewToken(user)
+
+        else:
+          var testUser = newUser()
+          try:
+            db.select(user, "username = ?", @"username")
+            db.select(testUser, "password = ?", @"password")
+          except NotFoundError:
+            resp "Login failed, Incorrect username and/or password!"
+          
+          if user.username == testUser.username and user.password == testUser.password:
+            db.genNewToken(user)
+          
+        resp user.token
 
       #? endpoint POST `/api/getItem`
       #[ request parameters: 
