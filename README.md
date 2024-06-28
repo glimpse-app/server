@@ -18,20 +18,13 @@ nimble run --verbose -d:normDebug
 
 ## API Endpoints
 
-### /api/register
-
-Arguments required: `username` `password`
+Each endpoint has comments describing what type of request it is and what parameters it takes.
+Example requests using `cURL`:
 
 ```sh
 curl -s -X POST http://localhost:5000/api/register -d 'username=Array' -d 'password=i8Vl8XZaVRiZFsZ'
 ```
 
-### /api/upload
-
-Arguments required: `file` `token`
-
-Example:
-
 ```sh
-curl -i -X POST -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "token=SkNaeltRR2RPS3FXTUlvVkdBZ154S3Bjam5iZllkWnlxeVN3cUtfTVQ=" http://localhost:5000/api/upload
+curl -s -X POST -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "token=<some long hash here>" http://localhost:5000/api/upload
 ```
