@@ -4,7 +4,7 @@ nimblecache/
 htmldocs/
 
 # executables
-server
+/server
 
 # file uploads directory
 uploads/
