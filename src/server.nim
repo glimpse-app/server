@@ -3,6 +3,7 @@ import std/[strutils, os, logging]
 import jester
 import norm/[model, sqlite]
 import server/[users, files]
+import checksums/sha3
 
 addHandler newConsoleLogger(fmtStr = "")
 
@@ -57,16 +58,17 @@ routes:
           db.genNewToken(user)
 
         else:
-          var testUser = newUser()
           try:
             db.select(user, "username = ?", @"username")
-            db.select(testUser, "password = ?", @"password")
           except NotFoundError:
-            resp "Login failed, Incorrect username and/or password!"
-          
-          if user.username == testUser.username and user.password == testUser.password:
+            resp "Login failed, Incorrect username and/or password!" # fails if username is wrong but mentions password to obfuscates if a user exists or not
+          echo user.password
+          echo @"password"
+          echo $Sha3_512.secureHash(@"password")
+          if user.password == $Sha3_512.secureHash(@"password"):
             db.genNewToken(user)
-          
+          else:
+            resp "Login failed, Incorrect username and/or password!" # fails if password is wrong but mentions username to obfuscates if a user exists or not
         resp user.token
 
       #? endpoint POST `/api/getItem`

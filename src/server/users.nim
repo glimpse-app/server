@@ -34,4 +34,4 @@ proc genNewToken*(db: DbConn, user: var User) =
 
 # creates a new user object and sets default values, recommended by the norm documentation 
 proc newUser*(username: string = "", email: string = "", password: string = ""): User =
-  User(username: username, email: email, password: password, token: generateToken(username))
+  User(username: username, email: email, password: $Sha3_512.secureHash(password), token: generateToken(username))
