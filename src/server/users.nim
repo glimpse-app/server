@@ -6,7 +6,7 @@ import checksums/sha3
 type User* = ref object of Model
   username*: string     # should be unique
   email*: string        # should be unique
-  password*: string
+  password*: string     # sha3-512 hash
   token*: string        # should be unique
 
 # generate secure login token
