@@ -24,27 +24,36 @@ routes:
     case @"operation":
     
       #? endpoint POST `/api/register`
-      #[ request parameters: 
-        username  -  string   -  required
-        email     -  string   -  required
-        password  -  string   -  required
+      #[ 
+        request parameters: 
+          username  -  string   -  required
+          email     -  string   -  required
+          password  -  string   -  required
+        returns:
+          success   -  token    -  new login token
+          fail      -  1        - not all required parameters are provided
       ]#
       of "register":
         # creates new user with provided info
         # TODO: sanitization + check if username and email are unique
         if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or @"password".isEmptyOrWhitespace():
-          resp "Registeration failed! A none empty username, email and password are requied!"
+          resp "1"
 
         var user = newUser(@"username", @"email", @"password")
         db.insert(user)
         resp user.token
 
       #? endpoint POST `/api/login`
-      #[ request parameters:
-        token     -  string   -  required
-                      OR
-        username  -  string   -  required
-        password  -  string   -  required
+      #[ 
+        request parameters:
+          token     -  string   -  required
+                        OR
+          username  -  string   -  required
+          password  -  string   -  required
+        returns:
+          success   -  token    -  new login token, old token will not work
+          fail      -  1        -  invalid token
+          fail      -  2        -  bad username and/or password
       ]#
       of "login":
         # generates a new login token after signin
@@ -53,7 +62,7 @@ routes:
         if not @"token".isEmptyOrWhitespace():
           
           if not db.validToken(user, @"token"):
-            resp "Login failed, Invalid token!"
+            resp "1"
           
           db.genNewToken(user)
 
@@ -61,19 +70,22 @@ routes:
           try:
             db.select(user, "username = ?", @"username")
           except NotFoundError:
-            resp "Login failed, Incorrect username and/or password!" # fails if username is wrong but mentions password to obfuscates if a user exists or not
+            resp "2" # fails if username is wrong but mentions password to obfuscates if a user exists or not
           echo user.password
           echo @"password"
           echo $Sha3_512.secureHash(@"password")
           if user.password == $Sha3_512.secureHash(@"password"):
             db.genNewToken(user)
           else:
-            resp "Login failed, Incorrect username and/or password!" # fails if password is wrong but mentions username to obfuscates if a user exists or not
+            resp "2" # fails if password is wrong but mentions username to obfuscates if a user exists or not
         resp user.token
 
       #? endpoint POST `/api/getItem`
-      #[ request parameters: 
-        ???
+      #[ 
+        request parameters: 
+          ???
+        returns:
+          ???
       ]#
       of "getItem":
         # let index = parseInt(@"index")
@@ -81,33 +93,43 @@ routes:
         resp "JSON HERE indexedImages[index]"
 
       #? endpoint POST `/api/getPath`
-      #[ request parameters: 
-        ???
+      #[
+        request parameters: 
+          ???
+        returns:
+          ???
       ]#
       of "getPath":
         # let index = parseInt(@"index")
         resp """JSON HERE indexedImages[index]["path"]"""
 
       #? endpoint POST `/api/getTags`
-      #[ request parameters: 
-        ???
+      #[ 
+        request parameters: 
+          ???
+        returns:
+          ???
       ]#
       of "getTags":
         # let index = parseInt(@"index")
         resp """indexedImages[index]["tags"]"""
 
       #? endpoint POST `/api/upload`
-      #[ request parameters: 
-        file   -   string/binary   -  required
-        token  -   string          -  required
-        tags   -   seq             -  optional
+      #[
+        request parameters: 
+          file      -   string/binary   -  required
+          token     -   string          -  required
+          tags      -   seq             -  optional
+        returns:
+          success   -  0                -  successful upload
+          fail      -  1                - upload failed, invalid token
       ]#
       of "upload":
 
         # fills the new `user` var with saved user data from database
         var user = newUser()
         if not db.validToken(user, request.formData["token"].body):
-          resp "Upload failed, Invalid token!"
+          resp "1"
         
         # pull request form data arguments 
         let fileData = request.formData["file"].body
@@ -133,7 +155,7 @@ routes:
         
         # write the file from memory
         writeFile(directory & fileName, fileData)
-        resp "Uploaded successfully!"
+        resp "0"
 
       else:
         resp "Invalid operation!"
