@@ -142,19 +142,19 @@ routes:
         except KeyError:
           fileTags = "[]"
         
-        # create new file object
-        var file = newFile(user, fileName, fileTags)
-        db.insert(file)
-
         # create needed directories if they don't exist already
         let directory = "uploads/" & user.username & "/"
         if not dirExists(directory):
           createDir(directory)
         
-        # TODO: index uploaded files into db using a table for files
+        let filePath = directory & fileName
+
+        # create new file object and add to db
+        var file = newFile(user, filePath, fileName, fileTags)
+        db.insert(file)
         
         # write the file from memory
-        writeFile(directory & fileName, fileData)
+        writeFile(filePath, fileData)
         resp "0"
 
       else:
