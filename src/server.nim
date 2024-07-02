@@ -16,9 +16,6 @@ routes:
   get "/":
     resp "Hello, World!" # idk what to put here
 
-  get "/api":
-    resp "Hello, World!" # idk what to put here
-
   #[ 
     request parameters: 
       username  -  string   -  required
@@ -26,17 +23,17 @@ routes:
       password  -  string   -  required
     returns:
       success   -  token    -  new login token
-      fail      -  1        - not all required parameters are provided
+      fail      -  403      - not all required parameters are provided
   ]#
   post "/api/v1/register":
     # creates new user with provided info
     # TODO: sanitization + check if username and email are unique
     if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or @"password".isEmptyOrWhitespace():
-      resp "1"
+      resp Http403, "Not all required parameters are provided."
 
     var user = newUser(@"username", @"email", @"password")
     db.insert(user)
-    resp user.token
+    resp Http200, user.token
 
   #[ 
     request parameters:
@@ -46,8 +43,8 @@ routes:
       password  -  string   -  required
     returns:
       success   -  token    -  new login token, old token will not work
-      fail      -  1        -  invalid token
-      fail      -  2        -  bad username and/or password
+      fail      -  403      -  invalid token
+      fail      -  403      -  bad username and/or password
   ]#
   post "/api/v1/login":
     # generates a new login token after signin
@@ -56,7 +53,7 @@ routes:
     if not @"token".isEmptyOrWhitespace():
       
       if not db.validToken(user, @"token"):
-        resp "1"
+        resp Http403, "Invalid token."
       
       db.genNewToken(user)
 
@@ -64,15 +61,15 @@ routes:
       try:
         db.select(user, "username = ?", @"username")
       except NotFoundError:
-        resp "2" # fails if username is wrong but mentions password to obfuscates if a user exists or not
+        resp Http403, "Incorrect username or password." # fails if username is wrong but mentions password to obfuscates if a user exists or not
       echo user.password
       echo @"password"
       echo $Sha3_512.secureHash(@"password")
       if user.password == $Sha3_512.secureHash(@"password"):
         db.genNewToken(user)
       else:
-        resp "2" # fails if password is wrong but mentions username to obfuscates if a user exists or not
-    resp user.token
+        resp Http403, "Incorrect username or password." # fails if password is wrong but mentions username to obfuscates if a user exists or not
+    resp Http200, user.token
 
   #[ 
     request parameters: 
@@ -111,15 +108,15 @@ routes:
       token     -   string          -  required
       tags      -   seq             -  optional
     returns:
-      success   -  0                -  successful upload
-      fail      -  1                - upload failed, invalid token
+      success   -  200              -  successful upload
+      fail      -  403              - upload failed, invalid token
   ]#
   post "/api/v1/upload":
 
     # fills the new `user` var with saved user data from database
     var user = newUser()
     if not db.validToken(user, request.formData["token"].body):
-      resp "1"
+      resp Http403, "Invalid, token."
     
     # pull request form data arguments 
     let fileData = request.formData["file"].body
@@ -145,4 +142,4 @@ routes:
     
     # write the file from memory
     writeFile(filePath, fileData)
-    resp "0"
+    resp Http200
