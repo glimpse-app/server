@@ -22,9 +22,9 @@ Each endpoint has comments describing what type of request it is and what parame
 Example requests using `cURL`:
 
 ```sh
-curl -s -X POST http://localhost:5000/api/register -d 'username=Array' -d 'password=i8Vl8XZaVRiZFsZ'
+curl -s -X POST http://localhost:5000/api/v1/register -d 'username=Array' -d 'password=i8Vl8XZaVRiZFsZ'
 ```
 
 ```sh
-curl -s -X POST -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "token=<some long hash here>" http://localhost:5000/api/upload
+curl -s -X POST -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "token=<some long hash here>" http://localhost:5000/api/v1/upload
 ```
