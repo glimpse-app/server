@@ -19,7 +19,6 @@ routes:
   get "/api":
     resp "Hello, World!" # idk what to put here
 
-  #? endpoint POST `/api/register`
   #[ 
     request parameters: 
       username  -  string   -  required
@@ -39,7 +38,6 @@ routes:
     db.insert(user)
     resp user.token
 
-  #? endpoint POST `/api/login`
   #[ 
     request parameters:
       token     -  string   -  required
@@ -76,7 +74,6 @@ routes:
         resp "2" # fails if password is wrong but mentions username to obfuscates if a user exists or not
     resp user.token
 
-  #? endpoint POST `/api/getItem`
   #[ 
     request parameters: 
       ???
@@ -88,7 +85,6 @@ routes:
     # db.select(file, "File.path = ?", "/car.png")
     resp "JSON HERE indexedImages[index]"
 
-  #? endpoint POST `/api/getPath`
   #[
     request parameters: 
       ???
@@ -99,7 +95,6 @@ routes:
     # let index = parseInt(@"index")
     resp """JSON HERE indexedImages[index]["path"]"""
 
-  #? endpoint POST `/api/getTags`
   #[ 
     request parameters: 
       ???
@@ -110,7 +105,6 @@ routes:
     # let index = parseInt(@"index")
     resp """indexedImages[index]["tags"]"""
 
-  #? endpoint POST `/api/upload`
   #[
     request parameters: 
       file      -   string/binary   -  required
