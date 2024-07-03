@@ -26,5 +26,5 @@ curl -s -X POST http://localhost:5000/api/v1/register -d 'username=Array' -d 'pa
 ```
 
 ```sh
-curl -s -X POST -F "file=@image.png" -F "token=<some long hash here>" http://localhost:5000/api/v1/upload
+curl -s -X POST -H "Authorization: <some long hash here>" -F "file=@image.png" http://localhost:5000/api/v1/upload
 ```

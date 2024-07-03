@@ -13,6 +13,7 @@ let db = open("storage.db", "", "", "")
 db.createTables(newFile()) # file objects require a user object, thus a tables for both are created
 
 routes:
+
   get "/":
     resp "Hello, World!" # idk what to put here
 
@@ -50,9 +51,9 @@ routes:
     # generates a new login token after signin
     var user = newUser()
     
-    if not @"token".isEmptyOrWhitespace():
+    if not request.headers["Authorization"].isEmptyOrWhitespace():
       
-      if not db.validToken(user, @"token"):
+      if not db.validToken(user, request.headers["Authorization"]):
         resp Http403, "Invalid token."
       
       db.genNewToken(user)
@@ -82,7 +83,7 @@ routes:
   ]#
   post "/api/v1/getItemByName":
     var user = newUser()
-    if not db.validToken(user, @"token"):
+    if not db.validToken(user, request.headers["Authorization"]):
       resp Http403, "Invalid token."
     
     var file = newFile()
@@ -126,7 +127,7 @@ routes:
 
     # fills the new `user` var with saved user data from database
     var user = newUser()
-    if not db.validToken(user, request.formData["token"].body):
+    if not db.validToken(user, request.headers["Authorization"]):
       resp Http403, "Invalid token."
     
     # pull request form data arguments 
