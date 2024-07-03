@@ -115,7 +115,7 @@ routes:
     request parameters: 
       file     -  string/binary  -  required
       token    -  string         -  required via header
-      tags     -  seq            -  optinal
+      tags     -  JSON           -  optinal
     returns
       success  -  200            -  successful upload
       fail     -  403            -  upload failed, invalid token
