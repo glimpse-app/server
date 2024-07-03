@@ -22,7 +22,7 @@ Each endpoint has comments describing what type of request it is and what parame
 Example requests using `cURL`:
 
 ```sh
-curl --header "Authorization: <access_token>" -X <POST|GET|PUT|DELETE> <Endpoint URI> -d '<Request Body Contents>'
+curl -H "Authorization: <access_token>" -X <POST|GET|PUT|DELETE> <Endpoint URI> -d '<Request Body Contents>'
 ```
 
 ```sh
