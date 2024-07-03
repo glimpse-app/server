@@ -73,14 +73,25 @@ routes:
 
   #[ 
     request parameters: 
-      ???
+      token     -  string         -  required
+      name      -  string         -  file name to download 
     returns:
-      ???
+      success   -  string/binary  -  file
+      fail      -  403            -  invalid token
+      fail      -  404            -  file doesn't exist
   ]#
-  post "/api/v1/getItem":
-    # let index = parseInt(@"index")
-    # db.select(file, "File.path = ?", "/car.png")
-    resp "JSON HERE indexedImages[index]"
+  post "/api/v1/getItemByName":
+    var user = newUser()
+    if not db.validToken(user, @"token"):
+      resp Http403, "Invalid token."
+    
+    var file = newFile()
+    try:
+      db.select(file, "File.name = ?", @"name")
+    except NotFoundError:
+      resp Http404, "File does not exist"
+  
+    sendFile file.path
 
   #[
     request parameters: 
@@ -104,19 +115,19 @@ routes:
 
   #[
     request parameters: 
-      file      -   string/binary   -  required
-      token     -   string          -  required
-      tags      -   seq             -  optional
-    returns:
-      success   -  200              -  successful upload
-      fail      -  403              - upload failed, invalid token
+      file     -  string/binary  -  required
+      token    -  string         -  required
+      tags     -  seq            -  optinal
+    returns
+      success  -  200            -  successful upload
+      fail     -  403            -  upload failed, invalid token
   ]#
   post "/api/v1/upload":
 
     # fills the new `user` var with saved user data from database
     var user = newUser()
     if not db.validToken(user, request.formData["token"].body):
-      resp Http403, "Invalid, token."
+      resp Http403, "Invalid token."
     
     # pull request form data arguments 
     let fileData = request.formData["file"].body
