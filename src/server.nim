@@ -100,9 +100,9 @@ routes:
     returns:
       ???
   ]#
-  post "/api/v1/getPath":
+  # post "/api/v1/getPath":
     # let index = parseInt(@"index")
-    resp """JSON HERE indexedImages[index]["path"]"""
+    # resp """JSON HERE indexedImages[index]["path"]"""
 
   #[ 
     request parameters: 
@@ -110,9 +110,9 @@ routes:
     returns:
       ???
   ]#
-  post "/api/v1/getTags":
+  # post "/api/v1/getTags":
     # let index = parseInt(@"index")
-    resp """indexedImages[index]["tags"]"""
+    # resp """indexedImages[index]["tags"]"""
 
   #[
     request parameters: 
