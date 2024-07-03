@@ -38,7 +38,7 @@ routes:
 
   #[ 
     request parameters:
-      token     -  string   -  required
+      token     -  string   -  required via header
                     OR
       username  -  string   -  required
       password  -  string   -  required
@@ -117,7 +117,7 @@ routes:
   #[
     request parameters: 
       file     -  string/binary  -  required
-      token    -  string         -  required
+      token    -  string         -  required via header
       tags     -  seq            -  optinal
     returns
       success  -  200            -  successful upload
