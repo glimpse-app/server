@@ -14,9 +14,6 @@ db.createTables(newFile()) # file objects require a user object, thus a tables f
 
 routes:
 
-  get "/":
-    resp "Hello, World!" # idk what to put here
-
   #[ 
     request parameters: 
       username  -  string   -  required
@@ -26,7 +23,7 @@ routes:
       success   -  token    -  new login token
       fail      -  403      - not all required parameters are provided
   ]#
-  post "/api/v1/register":
+  post "/api/v1/newUser":
     # creates new user with provided info
     # TODO: sanitization + check if username and email are unique
     if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or @"password".isEmptyOrWhitespace():
@@ -47,7 +44,7 @@ routes:
       fail      -  403      -  invalid token
       fail      -  403      -  bad username and/or password
   ]#
-  post "/api/v1/login":
+  post "/api/v1/newSession":
     # generates a new login token after signin
     var user = newUser()
     
@@ -123,7 +120,7 @@ routes:
       success  -  200            -  successful upload
       fail     -  403            -  upload failed, invalid token
   ]#
-  post "/api/v1/upload":
+  post "/api/v1/newFile":
 
     # fills the new `user` var with saved user data from database
     var user = newUser()
