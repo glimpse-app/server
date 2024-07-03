@@ -151,4 +151,19 @@ routes:
     
     # write the file from memory
     writeFile(filePath, fileData)
-    resp Http200
+    resp Http200, "File uploaded."
+
+  #[
+    request parameters: 
+      token    -  string         -  required via header
+    returns
+      success  -  200            -  deleted user
+      fail     -  403            -  deletion failed, invalid token
+  ]#
+  delete "/api/v1/user":
+    var user = newUser()
+    if not db.validToken(user, request.headers["Authorization"]):
+      resp Http403, "Invalid token."
+    
+    db.delete(user)
+    resp Http200, "User has been deleted."
