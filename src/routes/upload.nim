@@ -1,4 +1,4 @@
-import std/[strutils, os]
+import std/[strutils, os, json]
 import jester
 import norm/[model, sqlite]
 import ../types/[users, files]
@@ -28,10 +28,14 @@ proc createUploadRoutes*() =
       var fileTags: string
 
       # this is a hack, I hate this 
+      # convert to JsonNode to ensure we were given a proper JSON
+      # convert back to a string because db doesnt allow for JsonNode
       try:
-        fileTags = request.formData["tags"].body 
+        fileTags = $parseJson(request.formData["tags"].body) # TODO: sanitize, only an array of strings (e.g. nested objects/arrays)
       except KeyError:
         fileTags = "[]"
+      except: # "except JsonError:" doesn't work for some reason
+        resp Http400, "Bad JSON"
       
       # create needed directories if they don't exist already
       let directory = "uploads/" & user.username & "/"
