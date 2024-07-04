@@ -2,7 +2,7 @@
 import std/[strutils, os, logging]
 import jester
 import norm/[model, sqlite]
-import server/[users, files]
+import types/[users, files]
 import checksums/sha3
 
 addHandler newConsoleLogger(fmtStr = "")
