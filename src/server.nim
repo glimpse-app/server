@@ -1,14 +1,17 @@
-# import libs
-import std/[strutils, os, logging]
+import std/[strutils, os]
 import jester
 import norm/[model, sqlite]
-import types/[users, files]
 import checksums/sha3
-import database
+import ./types/[users, files]
+import ./database
+import ./routes/[auth, delete, download, upload]
+
+createAuthenticationRoutes()
+createDeletionRoutes()
+createDownloadRoutes()
+createUploadRoutes()
 
 # addHandler newConsoleLogger(fmtStr = "")
-
-import routes/[auth, delete, download, upload]
 
 routes:
   #[

@@ -1,5 +1,5 @@
 import norm/model
-import users
+import ./users
 
 # file objects are owned by a user
 type File* = ref object of Model
