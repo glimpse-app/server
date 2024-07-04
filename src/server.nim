@@ -4,34 +4,15 @@ import jester
 import norm/[model, sqlite]
 import types/[users, files]
 import checksums/sha3
+import database
 
 addHandler newConsoleLogger(fmtStr = "")
 
-# using sqlite as it makes setup faster
-# once project is stable enough this will switch to postgresql
-let db = open("storage.db", "", "", "")
-db.createTables(newFile()) # file objects require a user object, thus a tables for both are created
+import routes/[newUser]
+
+createNewUserRoute()
 
 routes:
-
-  #[ 
-    request parameters: 
-      username  -  string   -  required
-      email     -  string   -  required
-      password  -  string   -  required
-    returns:
-      success   -  token    -  new login token
-      fail      -  403      - not all required parameters are provided
-  ]#
-  post "/api/v1/newUser":
-    # creates new user with provided info
-    # TODO: sanitization + check if username and email are unique
-    if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or @"password".isEmptyOrWhitespace():
-      resp Http403, "Not all required parameters are provided."
-
-    var user = newUser(@"username", @"email", @"password")
-    db.insert(user)
-    resp Http200, user.token
 
   #[ 
     request parameters:
@@ -204,3 +185,7 @@ routes:
     
   #   db.delete(user)
   #   resp Http200, "User has been deleted."
+
+# template respJson*(node: JsonNode) =
+#   resp $node, "application/json"
+  extend newUser, ""
