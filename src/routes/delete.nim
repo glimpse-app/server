@@ -1,4 +1,4 @@
-import std/[strutils, os]
+import std/[strutils, os, httpclient]
 import jester
 import norm/[model, sqlite]
 import ../types/[users, files]
@@ -17,9 +17,15 @@ proc createDeletionRoutes*() =
       var user = newUser()
       if not db.validToken(user, request.headers["Authorization"]):
         resp Http403, "Invalid token."
-      # TODO: delete all user's files
+      
+      var client = newHttpClient()
+      client.headers = newHttpHeaders({ "Authorization": $request.headers["Authorization"] })
+      try:
+        discard client.deleteContent("http://localhost:5000/api/v1/AllFiles")
+      finally:
+        client.close()
       db.delete(user)
-      resp Http200, "User has been deleted.\n"
+      resp Http200, "User account has been deleted.\n"
 
     #[
       request parameters: 
@@ -63,7 +69,8 @@ proc createDeletionRoutes*() =
 
       for i in 0..(listOfFiles.len - 1):
         var file = listOfFiles[i]
-        removeFile(file.path)
         db.delete(file)
+
+      removeDir("uploads/" & user.username & "/")
 
       resp Http200, "All files have been deleted.\n"

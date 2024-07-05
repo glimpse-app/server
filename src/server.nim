@@ -1,4 +1,4 @@
-import std/[strutils, os, json]
+import std/[strutils, os, json, httpclient]
 import jester
 import norm/[model, sqlite]
 import checksums/sha3
