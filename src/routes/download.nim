@@ -1,4 +1,4 @@
-import std/[strutils, strformat]
+import std/strutils
 import jester
 import norm/sqlite
 import ../types/[users, files]
@@ -49,7 +49,7 @@ proc createDownloadRoutes*() =
       var allFiles: string
 
       for file in listOfFiles:
-        allFiles = allFiles & "{" & "\"name\": \"" & file.name & "\", \"tags\": " & fmt"""{file.tags}""" & "},"
+        allFiles = allFiles & "{" & "\"name\": \"" & file.name & "\", \"tags\": " & file.tags & "},"
       allFiles = "[" & allFiles[0..^2] & "]" # trim last comma
 
       resp Http200, allFiles & "\n", "application/json"
