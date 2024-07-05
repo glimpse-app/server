@@ -58,7 +58,7 @@ proc createDeletionRoutes*() =
       var listOfFiles = @[newFile()]
       try:
         db.select(listOfFiles, "File.owner = ?", user.id)
-      except NotFoundError:
+      except NotFoundError: # this error does not occur even if no files exist
         resp Http404, "Files do not exist.\n"
 
       for i in 0..(listOfFiles.len - 1):
