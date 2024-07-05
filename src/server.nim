@@ -1,4 +1,4 @@
-import std/[strutils, os, json, httpclient]
+import std/[strutils, os, json, asyncdispatch, httpclient]
 import jester
 import norm/[model, sqlite]
 import checksums/sha3
@@ -11,19 +11,7 @@ createDeletionRoutes()
 createDownloadRoutes()
 createUploadRoutes()
 
-# addHandler newConsoleLogger(fmtStr = "")
-
 routes:
-  #[
-    request parameters: 
-      ???
-    returns:
-      ???
-  ]#
-  # post "/api/v1/getPath":
-    # let index = parseInt(@"index")
-    # resp """JSON HERE indexedImages[index]["path"]"""
-
   #[ 
     request parameters: 
       ???
