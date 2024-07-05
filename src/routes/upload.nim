@@ -20,7 +20,7 @@ proc createUploadRoutes*() =
       # fills the new `user` var with saved user data from database
       var user = newUser()
       if not db.validToken(user, request.headers["Authorization"]):
-        resp Http403, "Invalid token."
+        resp Http403, "Invalid token.\n"
       
       # pull request form data arguments 
       let fileData = request.formData["file"].body
@@ -35,7 +35,7 @@ proc createUploadRoutes*() =
       except KeyError:
         fileTags = "[]"
       except: # "except JsonError:" doesn't work for some reason
-        resp Http400, "Bad JSON"
+        resp Http400, "Bad JSON.\n"
       
       # create needed directories if they don't exist already
       let directory = "uploads/" & user.username & "/"
@@ -50,4 +50,4 @@ proc createUploadRoutes*() =
       
       # write the file from memory
       writeFile(filePath, fileData)
-      resp Http200, "File uploaded."
+      resp Http200, "File uploaded.\n"

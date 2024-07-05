@@ -20,11 +20,11 @@ proc createAuthenticationRoutes*() =
       # creates new user with provided info
       # TODO: sanitization + check if username and email are unique
       if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or @"password".isEmptyOrWhitespace():
-        resp Http403, "Not all required parameters are provided."
+        resp Http403, "Not all required parameters are provided.\n"
 
       var user = newUser(@"username", @"email", @"password")
       db.insert(user)
-      resp Http200, user.token
+      resp Http200, user.token & "\n"
 
     #[ 
       request parameters:
@@ -44,7 +44,7 @@ proc createAuthenticationRoutes*() =
       if not request.headers["Authorization"].isEmptyOrWhitespace():
         
         if not db.validToken(user, request.headers["Authorization"]):
-          resp Http403, "Invalid token."
+          resp Http403, "Invalid token.\n"
         
         db.genNewToken(user)
 
@@ -52,12 +52,12 @@ proc createAuthenticationRoutes*() =
         try:
           db.select(user, "username = ?", @"username")
         except NotFoundError:
-          resp Http403, "Incorrect username or password." # fails if username is wrong but mentions password to obfuscates if a user exists or not
+          resp Http403, "Incorrect username or password.\n" # fails if username is wrong but mentions password to obfuscates if a user exists or not
         echo user.password
         echo @"password"
         echo $Sha3_512.secureHash(@"password")
         if user.password == $Sha3_512.secureHash(@"password"):
           db.genNewToken(user)
         else:
-          resp Http403, "Incorrect username or password." # fails if password is wrong but mentions username to obfuscates if a user exists or not
-      resp Http200, user.token
+          resp Http403, "Incorrect username or password.\n" # fails if password is wrong but mentions username to obfuscates if a user exists or not
+      resp Http200, user.token & "\n"

@@ -19,7 +19,7 @@ proc createDeletionRoutes*() =
         resp Http403, "Invalid token."
       # TODO: delete all user's files
       db.delete(user)
-      resp Http200, "User has been deleted."
+      resp Http200, "User has been deleted.\n"
 
     #[
       request parameters: 
@@ -32,16 +32,16 @@ proc createDeletionRoutes*() =
     delete "/api/v1/file":
       var user = newUser()
       if not db.validToken(user, request.headers["Authorization"]):
-        resp Http403, "Invalid token."
+        resp Http403, "Invalid token.\n"
 
       var file = newFile()
       try:
         db.select(file, "File.name = ?", request.headers["name"])
       except NotFoundError:
-        resp Http404, "File does not exist"
+        resp Http404, "File does not exist.\n"
     
       db.delete(file)
-      resp Http200, "File has been deleted."
+      resp Http200, "File has been deleted.\n"
 
     #[
       request parameters: 

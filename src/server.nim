@@ -1,4 +1,4 @@
-import std/[strutils, os, json]
+import std/[strutils, os, json, strformat]
 import jester
 import norm/[model, sqlite]
 import checksums/sha3
@@ -34,8 +34,6 @@ routes:
     # let index = parseInt(@"index")
     # resp """indexedImages[index]["tags"]"""
 
-# template respJson*(node: JsonNode) =
-#   resp $node, "application/json"
   extend auth, ""
   extend delete, ""
   extend download, ""
