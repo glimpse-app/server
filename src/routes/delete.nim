@@ -1,4 +1,4 @@
-import std/strutils
+import std/[strutils, os]
 import jester
 import norm/[model, sqlite]
 import ../types/[users, files]
@@ -50,10 +50,20 @@ proc createDeletionRoutes*() =
         success  -  200            -  deleted all files
         fail     -  403            -  deletion failed, invalid token
     ]#
-    # delete "/api/v1/AllFiles":
-    #   var user = newUser()
-    #   if not db.validToken(user, request.headers["Authorization"]):
-    #     resp Http403, "Invalid token."
-      
-    #   db.delete(user)
-    #   resp Http200, "User has been deleted."
+    delete "/api/v1/AllFiles":
+      var user = newUser()
+      if not db.validToken(user, request.headers["Authorization"]):
+        resp Http403, "Invalid token.\n"
+
+      var listOfFiles = @[newFile()]
+      try:
+        db.select(listOfFiles, "File.owner = ?", user.id)
+      except NotFoundError:
+        resp Http404, "Files do not exist.\n"
+
+      for i in 0..(listOfFiles.len - 1):
+        var file = listOfFiles[i]
+        removeFile(file.path)
+        db.delete(file)
+
+      resp Http200, "All files have been deleted.\n"
