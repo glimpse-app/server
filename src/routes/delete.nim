@@ -7,7 +7,7 @@ import ../database
 proc purgeUserFiles*(token: string): Future[string] {.async.} =
 
   var client = newAsyncHttpClient()
-  client.headers = newHttpHeaders({ "Authorization": token })
+  client.headers = newHttpHeaders({"Authorization": token})
   try:
     return await client.deleteContent("http://localhost:5000/api/v1/files")
   finally:
@@ -17,11 +17,10 @@ proc purgeUserFiles*(token: string): Future[string] {.async.} =
 proc createDeletionRoutes*() =
   router delete:
     #[
-      request parameters: 
-        token    -  string         -  required via header
+      request parameters:
+        token          -  string         -  required via header
       returns
-        success  -  200            -  deleted user
-        fail     -  403            -  deletion failed, invalid token
+        200            -  user and all his files are deleted from db and filesystem
     ]#
     delete "/api/v1/userCompletely":
       var user = newUser()
@@ -29,16 +28,15 @@ proc createDeletionRoutes*() =
         resp Http403, "Invalid token."
 
       discard waitFor purgeUserFiles($request.headers["Authorization"])
-      db.delete(user) 
-      
+      db.delete(user)
+
       resp Http200, "User and all files have been deleted.\n"
 
     #[
-      request parameters: 
-        token    -  string         -  required via header
+      request parameters:
+        token          -  string         -  required via header
       returns
-        success  -  200            -  deleted user
-        fail     -  403            -  deletion failed, invalid token
+        200            -  deleted user account from db only
     ]#
     delete "/api/v1/user":
       var user = newUser()
@@ -47,15 +45,14 @@ proc createDeletionRoutes*() =
 
       db.delete(user)
 
-      resp Http200, "User account has been deleted.\n"
+      resp Http200, "User has been deleted.\n"
 
     #[
-      request parameters: 
-        token    -  string         -  required via header
-        name     -  string         -  required via header
+      request parameters:
+        token          -  string         -  required via header
+        name           -  string         -  required via header
       returns
-        success  -  200            -  deleted the file
-        fail     -  403            -  deletion failed, invalid token
+        200            -  deleted the specified file
     ]#
     delete "/api/v1/file":
       var user = newUser()
@@ -67,16 +64,15 @@ proc createDeletionRoutes*() =
         db.select(file, "File.name = ?", request.headers["name"])
       except NotFoundError:
         resp Http404, "File does not exist.\n"
-    
+
       db.delete(file)
       resp Http200, "File has been deleted.\n"
 
     #[
-      request parameters: 
-        token    -  string         -  required via header
+      request parameters:
+        token          -  string         -  required via header
       returns
-        success  -  200            -  deleted all files
-        fail     -  403            -  deletion failed, invalid token
+        200            -  deleted all of the user's file from db and filesystem only
     ]#
     delete "/api/v1/files":
       var user = newUser()

@@ -7,17 +7,15 @@ import ../database
 
 proc createAuthenticationRoutes*() =
   router auth:
-    #[ 
-      request parameters: 
-        username  -  string   -  required
-        email     -  string   -  required
-        password  -  string   -  required
+    #[
+      request parameters:
+        username       -  string   -  required
+        email          -  string   -  required
+        password       -  string   -  required
       returns:
-        success   -  token    -  new login token
-        fail      -  403      - not all required parameters are provided
+        token          -  new login token
     ]#
     post "/api/v1/newUser":
-      # creates new user with provided info
       # TODO: sanitization + check if username and email are unique
       if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or @"password".isEmptyOrWhitespace():
         resp Http403, "Not all required parameters are provided.\n"
@@ -26,26 +24,23 @@ proc createAuthenticationRoutes*() =
       db.insert(user)
       resp Http200, user.token & "\n"
 
-    #[ 
+    #[
       request parameters:
-        token     -  string   -  required via header
+        token          -  string   -  required via header
                       OR
-        username  -  string   -  required
-        password  -  string   -  required
+        username       -  string   -  required
+        password       -  string   -  required
       returns:
-        success   -  token    -  new login token, old token will not work
-        fail      -  403      -  invalid token
-        fail      -  403      -  bad username and/or password
+        token          -  token will be replaced by a new one
     ]#
     post "/api/v1/newSession": #TODO change to GET?
-      # generates a new login token after signin
       var user = newUser()
-      
+
       if not request.headers["Authorization"].isEmptyOrWhitespace():
-        
+
         if not db.validToken(user, request.headers["Authorization"]):
           resp Http403, "Invalid token.\n"
-        
+
         db.genNewToken(user)
 
       else:
