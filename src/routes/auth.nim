@@ -41,18 +41,15 @@ proc createAuthenticationRoutes*() =
         if not db.validToken(user, request.headers["Authorization"]):
           resp Http403, "Invalid token.\n"
 
-        db.genNewToken(user)
+        db.generateToken(user)
 
       else:
         try:
           db.select(user, "username = ?", @"username")
         except NotFoundError:
           resp Http403, "Incorrect username or password.\n" # fails if username is wrong but mentions password to obfuscates if a user exists or not
-        echo user.password
-        echo @"password"
-        echo $Sha3_512.secureHash(@"password")
         if user.password == $Sha3_512.secureHash(@"password"):
-          db.genNewToken(user)
+          db.generateToken(user)
         else:
           resp Http403, "Incorrect username or password.\n" # fails if password is wrong but mentions username to obfuscates if a user exists or not
       resp Http200, user.token & "\n"
