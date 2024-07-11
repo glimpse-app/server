@@ -17,7 +17,8 @@ proc createAuthenticationRoutes*() =
     ]#
     post "/api/v1/newUser":
       # TODO: sanitization + check if username and email are unique
-      if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or @"password".isEmptyOrWhitespace():
+      if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or
+          @"password".isEmptyOrWhitespace():
         resp Http403, "Not all required parameters are provided.\n"
 
       var user = newUser(@"username", @"email", @"password")
