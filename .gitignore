@@ -13,4 +13,4 @@ uploads/
 *.db
 
 # configuration
-/config.init
+/config.ini
