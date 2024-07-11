@@ -11,3 +11,6 @@ uploads/
 
 # database
 *.db
+
+# configuration
+/config.init
