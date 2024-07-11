@@ -8,7 +8,6 @@ type File* = ref object of Model
   name*: string
   tags*: string #? This is a temporary hack should be `seq[string]` or `JsonNode` instead
 
-              # creates a new file object and sets default values, recommended by the norm documentation
-func newFile*(user: User = newUser(), path: string = "", name: string = "",
-    tags: string = ""): File =
+# creates a new file object and sets default values, recommended by the norm documentation
+func newFile*(user: User = newUser(), path: string = "", name: string = "", tags: string = ""): File =
   File(owner: user, path: path, name: name, tags: tags)
