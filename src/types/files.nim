@@ -12,4 +12,3 @@ type File* = ref object of Model
 func newFile*(user: User = newUser(), path: string = "", name: string = "",
     tags: string = ""): File =
   File(owner: user, path: path, name: name, tags: tags)
-
