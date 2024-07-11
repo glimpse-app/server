@@ -4,12 +4,13 @@ import norm/[model, sqlite]
 import checksums/sha3
 import ./types/[users, files]
 import ./database
-import ./routes/[auth, delete, download, upload]
+import ./routes/[auth, delete, download, upload, update]
 
 createAuthenticationRoutes()
 createDeletionRoutes()
 createDownloadRoutes()
 createUploadRoutes()
+createUpdateRoutes()
 
 routes:
   #[
@@ -26,3 +27,4 @@ routes:
   extend delete, ""
   extend download, ""
   extend upload, ""
+  extend update, ""
