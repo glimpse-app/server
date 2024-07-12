@@ -13,7 +13,12 @@ nimble install jester norm checksums
 Compile and run:
 
 ```sh
-nimble run --verbose -d:normDebug
+nimble run --deepcopy:on
+```
+
+More verbose compilation:
+```sh
+nimble run --deepcopy:on --verbose -d:normDebug --spellSuggest
 ```
 
 ## API Endpoints
