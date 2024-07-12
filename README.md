@@ -22,13 +22,13 @@ Each endpoint has comments describing what type of request it is and what parame
 Example requests using `cURL`:
 
 ```sh
-curl -H "Authorization: <access_token>" -X <POST|GET|PUT|DELETE> <Endpoint URI> -d '<Request Body Contents>'
+curl -X <POST|GET|PUT|DELETE> <Endpoint URI> -H '<Request Body Contents>'
 ```
 
 ```sh
-curl -s -X POST http://localhost:5000/api/v1/register -d 'username=Array' -d 'password=i8Vl8XZaVRiZFsZ'
+curl -X POST http://localhost:5000/api/v1/newUser -H 'Username=Array' -H 'Password=i8Vl8XZaVRiZFsZ'
 ```
 
 ```sh
-curl -s -X POST -H "Authorization: <access_token>" -F "file=@image.png" http://localhost:5000/api/v1/upload
+curl -X POST -H "Authorization: <access_token>" -F "file=@image.png" http://localhost:5000/api/v1/newFile
 ```
