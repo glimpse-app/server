@@ -2,7 +2,7 @@ import std/strutils
 import jester
 import norm/sqlite
 import ../types/[users, files]
-import ../database
+import ../[database, helpers]
 
 proc createDownloadRoutes*() =
   router download:
@@ -15,12 +15,12 @@ proc createDownloadRoutes*() =
     ]#
     get "/api/v1/fileByName":
       var user = newUser()
-      if not db.validToken(user, request.headers["Authorization"]):
+      if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token.\n"
 
       var file = newFile()
       try:
-        db.select(file, "File.name = ?", request.headers["name"])
+        db.select(file, "File.name = ?", H"Name")
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
@@ -33,7 +33,7 @@ proc createDownloadRoutes*() =
     ]#
     get "/api/v1/listAllFiles":
       var user = newUser()
-      if not db.validToken(user, request.headers["Authorization"]):
+      if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token.\n"
 
       var listOfFiles = @[newFile()]

@@ -2,7 +2,7 @@ import std/[strutils, os, json]
 import jester
 import norm/[model, sqlite]
 import ../types/[users, files]
-import ../database
+import ../[database, helpers]
 
 proc createUploadRoutes*() =
   router upload:
@@ -17,7 +17,7 @@ proc createUploadRoutes*() =
     post "/api/v1/newFile":
       # fills the new `user` var with saved user data from database
       var user = newUser()
-      if not db.validToken(user, request.headers["Authorization"]):
+      if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token.\n"
 
       # pull request form data arguments

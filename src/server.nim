@@ -3,7 +3,7 @@ import jester
 import norm/[model, sqlite]
 import checksums/sha3
 import ./types/[users, files]
-import ./database
+import ./[database, helpers]
 import ./routes/[auth, delete, download, upload, update]
 
 createAuthenticationRoutes()

@@ -2,7 +2,7 @@ import std/[strutils, os, httpclient]
 import jester
 import norm/[model, sqlite]
 import ../types/[users, files]
-import ../database
+import ../[database, helpers]
 
 proc purgeUserFiles*(token: string): Future[string] {.async.} =
 
@@ -24,10 +24,10 @@ proc createDeletionRoutes*() =
     ]#
     delete "/api/v1/userCompletely":
       var user = newUser()
-      if not db.validToken(user, request.headers["Authorization"]):
+      if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token."
 
-      discard waitFor purgeUserFiles($request.headers["Authorization"])
+      discard waitFor purgeUserFiles(H"Authorization")
       db.delete(user)
 
       resp Http200, "User and all files have been deleted.\n"
@@ -40,7 +40,7 @@ proc createDeletionRoutes*() =
     ]#
     delete "/api/v1/user":
       var user = newUser()
-      if not db.validToken(user, request.headers["Authorization"]):
+      if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token."
 
       db.delete(user)
@@ -56,12 +56,12 @@ proc createDeletionRoutes*() =
     ]#
     delete "/api/v1/file":
       var user = newUser()
-      if not db.validToken(user, request.headers["Authorization"]):
+      if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token.\n"
 
       var file = newFile()
       try:
-        db.select(file, "File.name = ?", request.headers["name"])
+        db.select(file, "File.name = ?", H"Name")
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
@@ -76,7 +76,7 @@ proc createDeletionRoutes*() =
     ]#
     delete "/api/v1/files":
       var user = newUser()
-      if not db.validToken(user, request.headers["Authorization"]):
+      if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token.\n"
 
       var listOfFiles = @[newFile()]

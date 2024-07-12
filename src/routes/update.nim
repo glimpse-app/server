@@ -2,7 +2,7 @@ import std/[strutils, os]
 import jester
 import norm/sqlite
 import ../types/[users, files]
-import ../database
+import ../[database, helpers]
 
 proc createUpdateRoutes*() =
   router update:
@@ -24,12 +24,12 @@ proc createUpdateRoutes*() =
     ]#
     put "/api/v1/newFileName":
       var user = newUser()
-      if not db.validToken(user, request.headers["Authorization"]):
+      if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token.\n"
 
       let
-        oldName = request.headers["Old name"]
-        newName = request.headers["New name"]
+        oldName = H"Old name"
+        newName = H"New name"
 
       var file = newFile()
       try:
