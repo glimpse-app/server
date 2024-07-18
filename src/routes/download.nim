@@ -31,7 +31,7 @@ proc createDownloadRoutes*() =
       returns:
         JSON           -  JSON node containing all files and tags
     ]#
-    get "/api/v1/listAllFiles":
+    get "/api/v1/listOfAllFiles":
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
         resp Http403, "Invalid token.\n"

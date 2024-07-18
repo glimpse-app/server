@@ -11,4 +11,5 @@ type File* = ref object of Model
               # creates a new file object and sets default values, recommended by the norm documentation
 func newFile*(user: User = newUser(), path: string = "", name: string = "",
     tags: string = ""): File =
+  inc user.fileCount
   File(owner: user, path: path, name: name, tags: tags)

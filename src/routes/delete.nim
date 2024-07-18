@@ -66,6 +66,8 @@ proc createDeletionRoutes*() =
         resp Http404, "File does not exist.\n"
 
       db.delete(file)
+      dec user.fileCount
+      db.update(user)
       resp Http200, "File has been deleted.\n"
 
     #[
@@ -88,7 +90,8 @@ proc createDeletionRoutes*() =
       for i in 0..(listOfFiles.len - 1):
         var file = listOfFiles[i]
         db.delete(file)
-
+      user.fileCount = 0
+      db.update(user)
       removeDir("uploads/" & user.username & "/")
 
       resp Http200, "All files have been deleted.\n"

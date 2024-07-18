@@ -46,6 +46,7 @@ proc createUploadRoutes*() =
       # create new file object and add to db
       var file = newFile(user, filePath, fileName, fileTags)
       db.insert(file)
+      db.update(user)
 
       # write the file from memory
       writeFile(filePath, fileData)
