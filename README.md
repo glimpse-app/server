@@ -34,7 +34,7 @@ To deploy an instance of the server within docker, run:
 
 ```sh
 docker buildx build -t glimpse-server:latest .
-docker run -it --rm glimpse-server:latest
+docker run -it --rm -p 5000:5000 glimpse-server:latest
 ```
 
 ## API Endpoints
