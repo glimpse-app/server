@@ -30,10 +30,11 @@ To compile the binary only, run the following (executable will be found in `/bin
 docker buildx build -t glimpse-server:latest --output=bin --target=runner -f
 ```
 
-To deploy an instance of the server, run:
+To deploy an instance of the server within docker, run:
 
 ```sh
-
+docker buildx build -t glimpse-server:latest .
+docker run -it --rm glimpse-server:latest
 ```
 
 ## API Endpoints
