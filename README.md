@@ -13,12 +13,27 @@ nimble install jester norm checksums
 Compile and run:
 
 ```sh
-nimble run --deepcopy:on
+nimble run
 ```
 
-More verbose compilation:
+Build project:
+
 ```sh
-nimble run --deepcopy:on --verbose -d:normDebug --spellSuggest
+nimble build
+```
+
+## Docker
+
+To compile the binary only, run the following (executable will be found in `/bin/`):
+
+```sh
+docker buildx build -t glimpse-server:latest --output=bin --target=runner -f
+```
+
+To deploy an instance of the server, run:
+
+```sh
+
 ```
 
 ## API Endpoints

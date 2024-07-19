@@ -9,6 +9,9 @@ htmldocs/
 # file uploads directory
 uploads/
 
+# docker build directory
+bin/
+
 # database
 *.db
 
