@@ -1,5 +1,5 @@
 import std/oids
-import norm/[model, sqlite]
+import norm/[model, postgres]
 import checksums/sha3
 
 # define user object
@@ -13,7 +13,7 @@ type User* = ref object of Model
 # checks if the provided token exists in the database
 proc validToken*(db: DbConn, user: var User, token: string): bool =
   try:
-    db.select(user, "token = ?", token)
+    db.select(user, """"token" = $1""", token)
     return true
   except NotFoundError:
     return false

@@ -1,6 +1,6 @@
 import std/[strutils, os, json]
 import jester
-import norm/[model, sqlite]
+import norm/[model, postgres]
 import ../types/[users, files]
 import ../[database, helpers]
 

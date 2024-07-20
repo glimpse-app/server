@@ -1,6 +1,6 @@
 import std/[strutils, os]
 import jester
-import norm/sqlite
+import norm/postgres
 import ../types/[users, files]
 import ../[database, helpers]
 
@@ -33,13 +33,13 @@ proc createUpdateRoutes*() =
 
       var file = newFile()
       try:
-        db.select(file, "File.name = ?", oldName)
+        db.select(file, """"File".name = $1""", oldName)
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
       block FileDoesNotExist:
         try:
-          db.select(file, "File.name = ?", newName)
+          db.select(file, """"File".name = $1""", newName)
         except NotFoundError:
           break FileDoesNotExist
         resp Http403, "File with that name already exists.\n"

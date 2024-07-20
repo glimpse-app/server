@@ -1,6 +1,6 @@
 import std/[strutils, os, json, asyncdispatch, httpclient]
 import jester
-import norm/[model, sqlite]
+import norm/[model, postgres]
 import checksums/sha3
 import ./types/[users, files]
 import ./[database, helpers]

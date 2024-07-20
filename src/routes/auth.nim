@@ -1,6 +1,6 @@
 import std/strutils
 import jester
-import norm/[model, sqlite]
+import norm/[model, postgres]
 import checksums/sha3
 import ../types/users
 import ../[database, helpers]
@@ -46,7 +46,7 @@ proc createAuthenticationRoutes*() =
 
       else:
         try:
-          db.select(user, "username = ?", H"Username")
+          db.select(user, """"User".username = $1""", H"Username")
         except NotFoundError:
           resp Http403, "Incorrect username or password.\n" # fails if username is wrong but mentions password to obfuscates if a user exists or not
         if user.password == $Sha3_512.secureHash($H"Password"):

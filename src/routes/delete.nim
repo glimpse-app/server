@@ -1,6 +1,6 @@
 import std/[strutils, os, httpclient]
 import jester
-import norm/[model, sqlite]
+import norm/[model, postgres]
 import ../types/[users, files]
 import ../[database, helpers]
 
@@ -61,7 +61,7 @@ proc createDeletionRoutes*() =
 
       var file = newFile()
       try:
-        db.select(file, "File.name = ?", H"Name")
+        db.select(file, """"File".name = $1""", H"Name")
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
@@ -83,7 +83,7 @@ proc createDeletionRoutes*() =
 
       var listOfFiles = @[newFile()]
       try:
-        db.select(listOfFiles, "File.owner = ?", user.id)
+        db.select(listOfFiles, """"File".owner = $1""", user.id)
       except NotFoundError: # this error does not occur even if no files exist
         resp Http404, "Files do not exist.\n"
 

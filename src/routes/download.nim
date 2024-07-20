@@ -1,6 +1,6 @@
 import std/strutils
 import jester
-import norm/sqlite
+import norm/postgres
 import ../types/[users, files]
 import ../[database, helpers]
 
@@ -20,7 +20,7 @@ proc createDownloadRoutes*() =
 
       var file = newFile()
       try:
-        db.select(file, "File.name = ?", H"Name")
+        db.select(file, """"File".name = $1""", H"Name")
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
@@ -38,7 +38,7 @@ proc createDownloadRoutes*() =
 
       var listOfFiles = @[newFile()]
       try:
-        db.select(listOfFiles, "File.owner = ?", user.id)
+        db.select(listOfFiles, """"File".owner = $1""", user.id)
       except NotFoundError:
         resp Http404, "Files does not exist.\n"
 
