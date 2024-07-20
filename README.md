@@ -37,6 +37,12 @@ docker buildx build -t glimpse-server:latest .
 docker run -it --rm -p 5000:5000 glimpse-server:latest
 ```
 
+Use the following to run a temporary PostgreSQL database, (**DO NOT USE IN PRODUCTION**):
+
+```sh
+docker run -it --rm -e POSTGRES_USER=user -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres
+```
+
 ## API Endpoints
 
 Each endpoint has comments describing what type of request it is and what parameters it takes.
