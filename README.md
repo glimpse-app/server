@@ -2,12 +2,20 @@
 
 This is the Glimpse API server.
 
-## Run test server instance
+## Compilation and deployment
+
+### Host
 
 Install needed libraries:
 
 ```sh
 nimble install jester norm checksums
+```
+
+Build glimpse executable:
+
+```sh
+nimble build
 ```
 
 Compile and run:
@@ -16,13 +24,7 @@ Compile and run:
 nimble run
 ```
 
-Build project:
-
-```sh
-nimble build
-```
-
-## Docker
+### Docker
 
 To compile the binary only, run the following (executable will be found in `/bin/`):
 
@@ -30,20 +32,26 @@ To compile the binary only, run the following (executable will be found in `/bin
 docker buildx build -t glimpse-server:latest --output=bin --target=runner -f
 ```
 
-To deploy an instance of the server within docker, run:
+To deploy an instance of glimpse within docker, run:
 
 ```sh
 docker buildx build -t glimpse-server:latest .
-docker run -it --rm -p 5000:5000 glimpse-server:latest
+docker run -it --rm -p 8080:8080 glimpse-server:latest
 ```
 
 Use the following to run a temporary PostgreSQL database, (**DO NOT USE IN PRODUCTION**):
 
 ```sh
-docker run -it --rm -e POSTGRES_USER=user -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres
+docker run -it --rm -e POSTGRES_USER=user -e POSTGRES_PASSWORD=postgresql -p 5432:5432 postgres
 ```
 
-## API Endpoints
+## Usage
+
+### Configuration
+
+Glimpse will create the default configuration file, `config.ini`, in the root of the directory if it does not exist. Configuration relating to web framework, [Jester](https://github.com/dom96/jester), is under the `Server` section. Database configuration is under the `Database` section. Other configuration variables are under `General`.
+
+### API Endpoints
 
 Each endpoint has comments describing what type of request it is and what parameters it takes.
 Example requests using `cURL`:
