@@ -1,4 +1,4 @@
-import std/[strutils, os]
+import std/[strutils, os, with]
 import jester
 import norm/postgres
 import ../types/[users, files]
@@ -50,4 +50,13 @@ proc createUpdateRoutes*() =
       file.path = newPath
       file.name = newName
       db.update(file)
-      resp Http200, "[{}]\n", "application/json"
+
+      var fileInfo: string
+      with fileInfo:
+        add "[{"
+        add("\"name\": \"" & file.name & "\",")
+        add("\"tags\": \"" & file.tags & "\"")
+        add "}]"
+
+
+      resp Http200, fileInfo & "\n", "application/json"
