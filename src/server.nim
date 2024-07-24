@@ -6,6 +6,13 @@ import ./types/[users, files]
 import ./[database, helpers]
 import ./routes/[auth, delete, download, upload, update]
 
+settings:
+  bindAddr = "0.0.0.0"
+  port = Port(8080)
+  reusePort = true
+  staticDir = "./public"
+  appName = ""
+
 createAuthenticationRoutes()
 createDeletionRoutes()
 createDownloadRoutes()
