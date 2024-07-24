@@ -20,8 +20,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
     #[
       request parameters:
         token          -  string         -  required via header
-      returns
-        200            -  user and all his files are deleted from db and filesystem
+      returns: JSON
     ]#
     delete "/api/v1/userCompletely":
       var user = newUser()
@@ -31,13 +30,12 @@ proc createDeletionRoutes*(cfg: Cfg) =
       discard waitFor purgeUserFiles(H"Authorization")
       db.delete(user)
 
-      resp Http200, "User and all files have been deleted.\n"
+      resp Http200, "[{}]\n", "application/json"
 
     #[
       request parameters:
         token          -  string         -  required via header
-      returns
-        200            -  deleted user account from db only
+      returns: JSON
     ]#
     delete "/api/v1/user":
       var user = newUser()
@@ -46,14 +44,13 @@ proc createDeletionRoutes*(cfg: Cfg) =
 
       db.delete(user)
 
-      resp Http200, "User has been deleted.\n"
+      resp Http200, "[{}]\n", "application/json"
 
     #[
       request parameters:
         token          -  string         -  required via header
         name           -  string         -  required via header
-      returns
-        200            -  deleted the specified file
+      returns: JSON
     ]#
     delete "/api/v1/file":
       var user = newUser()
@@ -69,7 +66,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
       db.delete(file)
       dec user.fileCount
       db.update(user)
-      resp Http200, "File has been deleted.\n"
+      resp Http200, "[{}]\n", "application/json"
 
     #[
       request parameters:

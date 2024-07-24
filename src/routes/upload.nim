@@ -12,8 +12,7 @@ proc createUploadRoutes*(cfg: Cfg) =
         file           -  string/binary  -  required
         token          -  string         -  required via header
         tags           -  JSON           -  optinal
-      returns
-        200            -  file saved to db and indexed into db
+      returns: JSON
     ]#
     post "/api/v1/newFile":
       # fills the new `user` var with saved user data from database
@@ -51,4 +50,4 @@ proc createUploadRoutes*(cfg: Cfg) =
 
       # write the file from memory
       writeFile(filePath, fileData)
-      resp Http200, "File uploaded.\n"
+      resp Http200, "[{}]\n", "application/json"
