@@ -10,8 +10,7 @@ proc createDownloadRoutes*() =
       request parameters:
         token          -  string         -  required via header
         name           -  string         -  file name via header
-      returns:
-        string/binary  -  server responds with the requested file
+      returns: string/binary 
     ]#
     get "/api/v1/fileByName":
       var user = newUser()
@@ -25,11 +24,11 @@ proc createDownloadRoutes*() =
         resp Http404, "File does not exist.\n"
 
       sendFile file.path
+
     #[
       request parameters:
         token          -  string         -  required via header
-      returns:
-        JSON           -  JSON node containing all files and tags
+      returns: JSON
     ]#
     get "/api/v1/listOfAllFiles":
       var user = newUser()
