@@ -9,8 +9,6 @@ import ./[database, helpers]
 import ./types/[users, files]
 import ./routes/[auth, delete, download, upload, update]
 
-let cfg = getConfig()
-
 settings:
   bindAddr = cfg.bindAddr
   port = Port(cfg.port)
@@ -19,9 +17,9 @@ settings:
   appName = cfg.appName
 
 createAuthenticationRoutes()
-createDeletionRoutes()
+createDeletionRoutes(cfg)
 createDownloadRoutes()
-createUploadRoutes()
+createUploadRoutes(cfg)
 createUpdateRoutes()
 
 routes:

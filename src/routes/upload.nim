@@ -3,8 +3,9 @@ import jester
 import norm/[model, postgres]
 import ../types/[users, files]
 import ../[database, helpers]
+import ../config/config
 
-proc createUploadRoutes*() =
+proc createUploadRoutes*(cfg: Cfg) =
   router upload:
     #[
       request parameters:
@@ -37,7 +38,7 @@ proc createUploadRoutes*() =
         resp Http400, "Bad JSON.\n"
 
       # create needed directories if they don't exist already
-      let directory = "uploads/" & user.username & "/"
+      let directory = cfg.uploadDir & user.username & "/"
       if not dirExists(directory):
         createDir(directory)
 

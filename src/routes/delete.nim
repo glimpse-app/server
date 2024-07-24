@@ -1,20 +1,21 @@
-import std/[strutils, os, httpclient]
+import std/[strutils, os, httpclient, strformat]
 import jester
 import norm/[model, postgres]
 import ../types/[users, files]
 import ../[database, helpers]
+import ../config/config
 
 proc purgeUserFiles*(token: string): Future[string] {.async.} =
 
   var client = newAsyncHttpClient()
   client.headers = newHttpHeaders({"Authorization": token})
   try:
-    return await client.deleteContent("http://localhost:5000/api/v1/files")
+    return await client.deleteContent(fmt"http://{cfg.bindAddr}:{cfg.port}/api/v1/files")
   finally:
     client.close()
 
 
-proc createDeletionRoutes*() =
+proc createDeletionRoutes*(cfg: Cfg) =
   router delete:
     #[
       request parameters:
@@ -92,6 +93,6 @@ proc createDeletionRoutes*() =
         db.delete(file)
       user.fileCount = 0
       db.update(user)
-      removeDir("uploads/" & user.username & "/")
+      removeDir(cfg.uploadDir & user.username & "/")
 
       resp Http200, "All files have been deleted.\n"
