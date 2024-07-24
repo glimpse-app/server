@@ -64,4 +64,12 @@ proc createAuthenticationRoutes*() =
           db.generateToken(user)
         else:
           resp Http403, "Incorrect username or password.\n" # fails if password is wrong but mentions username to obfuscates if a user exists or not
-      resp Http200, user.token & "\n"
+
+      var userToken: string
+      with userToken:
+        add "[{"
+        add("\"token\": \"" & user.token & "\"")
+        add "}]"
+
+      resp Http200, userToken & "\n", "application/json"
+
