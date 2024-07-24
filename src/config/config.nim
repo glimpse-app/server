@@ -41,7 +41,7 @@ proc getConfig(): Cfg =
     bindAddr: config.get("Server", "bindAddr", "0.0.0.0"),
     port: config.get("Server", "port", 8080),
     reusePort: config.get("Server", "reusePort", true),
-    staticDir: config.get("Server", "staticDir", "./public"),
+    staticDir: config.get("Server", "staticDir", "./public/"),
     appName: config.get("Server", "appName", ""),
     # database
     db: config.get("Database", "db", "postgresql"),
@@ -50,7 +50,7 @@ proc getConfig(): Cfg =
     dbPassword: config.get("Database", "dbPassword", "postgresql"),
     dbDatabase: config.get("Database", "dbDatabase", ""),
     # general
-    uploadDir: config.get("General", "uploadDir", "./uploads"),
+    uploadDir: config.get("General", "uploadDir", "./uploads/"),
   )
 
 var cfg* {.threadvar.}: Cfg
