@@ -8,7 +8,7 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get -y autoremove
 RUN nimble -y install jester norm checksums
 RUN nimble build -d:release
 
-ARG PORT=5000
+ARG PORT=8080
 EXPOSE $PORT
 
 ENTRYPOINT ["./server"]
