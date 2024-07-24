@@ -1,17 +1,22 @@
 import std/[strutils, os, json, asyncdispatch, httpclient]
+
 import jester
-import norm/[model, postgres]
 import checksums/sha3
-import ./types/[users, files]
+import norm/[model, postgres]
+
+import ./config/config
 import ./[database, helpers]
+import ./types/[users, files]
 import ./routes/[auth, delete, download, upload, update]
 
+let cfg = getConfig()
+
 settings:
-  bindAddr = "0.0.0.0"
-  port = Port(8080)
-  reusePort = true
-  staticDir = "./public"
-  appName = ""
+  bindAddr = cfg.bindAddr
+  port = Port(cfg.port)
+  reusePort = cfg.reusePort
+  staticDir = cfg.staticDir
+  appName = cfg.appName
 
 createAuthenticationRoutes()
 createDeletionRoutes()
