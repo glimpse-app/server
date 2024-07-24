@@ -12,8 +12,7 @@ proc createAuthenticationRoutes*() =
         username       -  string   -  required
         email          -  string   -  required
         password       -  string   -  required
-      returns:
-        token          -  new login token
+      returns: JSON
     ]#
     post "/api/v1/newUser":
       # TODO: sanitization + check if username and email are unique
@@ -42,8 +41,7 @@ proc createAuthenticationRoutes*() =
                       OR
         username       -  string   -  required via header
         password       -  string   -  required via header
-      returns:
-        token          -  token will be replaced by a new one
+      returns: JSON
     ]#
     get "/api/v1/newSession":
       var user = newUser()
