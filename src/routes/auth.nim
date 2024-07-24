@@ -1,4 +1,4 @@
-import std/strutils
+import std/[strutils, with]
 import jester
 import norm/[model, postgres]
 import checksums/sha3
@@ -23,7 +23,18 @@ proc createAuthenticationRoutes*() =
 
       var user = newUser(@"username", @"email", @"password")
       db.insert(user)
-      resp Http200, user.token & "\n"
+
+      var userProfile: string
+      with userProfile:
+        add "[{"
+        add("\"username\": \"" & user.username & "\",")
+        add("\"email\": \"" & user.email & "\",")
+        add("\"password\": \"" & user.password & "\",")
+        add("\"token\": \"" & user.token & "\",")
+        add("\"fileCount\": \"" & $user.fileCount & "\"")
+        add "}]"
+
+      resp Http200, userProfile & "\n", "application/json"
 
     #[
       request parameters:
