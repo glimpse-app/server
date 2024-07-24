@@ -19,8 +19,7 @@ proc createUpdateRoutes*() =
         token          -  string         -  required via header
         name           -  string         -  old file name via header
         name           -  string         -  new file name via header
-      returns:
-        200            -  file renamed successfully
+      returns: JSON
     ]#
     put "/api/v1/newFileName":
       var user = newUser()
@@ -51,4 +50,4 @@ proc createUpdateRoutes*() =
       file.path = newPath
       file.name = newName
       db.update(file)
-      resp Http200, "File renamed.\n"
+      resp Http200, "[{}]\n", "application/json"
