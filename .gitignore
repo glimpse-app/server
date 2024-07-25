@@ -5,6 +5,7 @@ htmldocs/
 
 # executables
 /server
+/tests/test
 
 # file uploads directory
 uploads/
