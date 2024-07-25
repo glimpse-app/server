@@ -162,6 +162,6 @@ if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
 else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
 fi; printf "%b\n" "$CLR";
 
-echo $TOKEN
+
 
 exit $ERROR;
