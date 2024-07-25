@@ -46,6 +46,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
 
       resp Http200, "[{}]\n", "application/json"
 
+    #! endpoint crashes server
     #[
       request parameters:
         token          -  string         -  required via header
@@ -66,6 +67,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
       db.delete(file)
       dec user.fileCount
       db.update(user)
+      removeFile(file.path)
       resp Http200, "[{}]\n", "application/json"
 
     #[
@@ -92,4 +94,4 @@ proc createDeletionRoutes*(cfg: Cfg) =
       db.update(user)
       removeDir(cfg.uploadDir & user.username & "/")
 
-      resp Http200, "All files have been deleted.\n"
+      resp Http200, "[{}]\n", "application/json"
