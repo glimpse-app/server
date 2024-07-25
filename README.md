@@ -54,7 +54,7 @@ Glimpse will create the default configuration file, `config.ini`, in the root of
 ### API Endpoints
 
 Each endpoint has comments describing what type of request it is and what parameters it takes.
-Example requests using `cURL`:
+Example requests using `cURL`, more examples can be found in `/tests/`:
 
 ```sh
 curl -X <POST|GET|PUT|DELETE> <Endpoint URI> -H '<Request Body Contents>'
