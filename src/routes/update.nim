@@ -49,7 +49,7 @@ proc createUpdateRoutes*() =
       # rename file in db
       file.path = newPath
       file.name = newName
-      db.update(file)
+      db.update(file) #! bug: file is being removed from db?
 
       var fileInfo: string
       with fileInfo:
