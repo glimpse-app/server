@@ -67,6 +67,18 @@ fi; printf "%b\n" "$CLR";
 
 
 
+printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
+TOKEN=$(curl --show-error --fail-early --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=testUser2" -d "password=$PASSWORD" -d "email=test@example.xyz" | jq ".[0].token" | tr -d '"')
+
+curl --show-error --fail-early --request POST http://"$BINDADDR":"$PORT""$ENDPOINT" \
+  -H "Authorization: $TOKEN" -F "file=@image2.jpg" -F 'tags=["4k HDR", "Fruit", "Yummy"]'
+
+if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT 2" "$YAY";
+else printf "%bTest: Fail - $ENDPOINT 2" "$NAY"; ((ERROR++));
+fi; printf "%b\n" "$CLR";
+
+
+#! something broken here 
 ENDPOINT="/api/v1/newFileName"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
 
@@ -78,5 +90,78 @@ else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
 fi; printf "%b\n" "$CLR";
 
 
+
+ENDPOINT="/api/v1/fileByName"
+printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
+
+curl --show-error --fail-early --request GET http://"$BINDADDR":"$PORT""$ENDPOINT" \
+  -H "Authorization: $TOKEN" -H "Name: kitty.png" --output downloaded.png
+
+if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+fi; printf "%b\n" "$CLR";
+rm downloaded.png
+
+
+
+ENDPOINT="/api/v1/listOfAllFiles"
+printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
+
+curl --show-error --fail-early --request GET http://"$BINDADDR":"$PORT""$ENDPOINT" \
+  -H "Authorization: $TOKEN"
+
+if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+fi; printf "%b\n" "$CLR";
+
+
+#! this endpoint crashes the server
+# ENDPOINT="/api/v1/file"
+# printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
+
+# curl --show-error --fail-early --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
+#   -H "Authorization: $TOKEN" -H "Name: image2.jpg"
+
+# if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
+# else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+# fi; printf "%b\n" "$CLR";
+
+
+
+ENDPOINT="/api/v1/files"
+printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
+
+curl --show-error --fail-early --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
+  -H "Authorization: $TOKEN"
+
+if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+fi; printf "%b\n" "$CLR";
+
+
+
+ENDPOINT="/api/v1/user"
+printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
+
+curl --show-error --fail-early --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
+  -H "Authorization: $TOKEN"
+
+if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+fi; printf "%b\n" "$CLR";
+
+
+
+ENDPOINT="/api/v1/userCompletely"
+printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
+
+curl --show-error --fail-early --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
+  -H "Authorization: $TOKEN"
+
+if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+fi; printf "%b\n" "$CLR";
+
+echo $TOKEN
 
 exit $ERROR;
