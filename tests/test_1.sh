@@ -11,7 +11,11 @@ CLR='\033[0m'
 
 CONFIGFILE="../config.ini"
 PASSWORD=$(pwgen 50 1)
-ERR=0
+ERROR=0
+
+if [ ! -f $CONFIGFILE ]; then
+  ERROR=$((ERROR+1))
+fi
 
 if grep -q ^bindAddr $CONFIGFILE; then
   BINDADDR=$(grep ^bindAddr $CONFIGFILE | tr -d '"' | tr -d '[:blank:]' | cut -c 10-)
@@ -36,7 +40,7 @@ curl --show-error --fail-early --request POST http://"$BINDADDR":"$PORT""$ENDPOI
   -d "email=test@example.xyz"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
@@ -49,7 +53,7 @@ curl --show-error --fail-early --request GET http://"$BINDADDR":"$PORT""$ENDPOIN
   -H "Authorization: $TOKEN"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
@@ -62,7 +66,7 @@ curl --show-error --fail-early --request POST http://"$BINDADDR":"$PORT""$ENDPOI
   -H "Authorization: $TOKEN" -F "file=@image.png"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
@@ -74,7 +78,7 @@ curl --show-error --fail-early --request POST http://"$BINDADDR":"$PORT""$ENDPOI
   -H "Authorization: $TOKEN" -F "file=@image2.jpg" -F 'tags=["4k HDR", "Fruit", "Yummy"]'
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT 2" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT 2" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT 2" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
@@ -86,7 +90,7 @@ curl --show-error --fail-early --request PUT http://"$BINDADDR":"$PORT""$ENDPOIN
   -H "Authorization: $TOKEN" -H "Old name: image.png" -H "New name: kitty.png"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
@@ -98,7 +102,7 @@ curl --show-error --fail-early --request GET http://"$BINDADDR":"$PORT""$ENDPOIN
   -H "Authorization: $TOKEN" -H "Name: kitty.png" --output downloaded.png
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 rm downloaded.png
 
@@ -111,7 +115,7 @@ curl --show-error --fail-early --request GET http://"$BINDADDR":"$PORT""$ENDPOIN
   -H "Authorization: $TOKEN"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
@@ -123,7 +127,7 @@ fi; printf "%b\n" "$CLR";
 #   -H "Authorization: $TOKEN" -H "Name: image2.jpg"
 
 # if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-# else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+# else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 # fi; printf "%b\n" "$CLR";
 
 
@@ -135,7 +139,7 @@ curl --show-error --fail-early --request DELETE http://"$BINDADDR":"$PORT""$ENDP
   -H "Authorization: $TOKEN"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
@@ -147,7 +151,7 @@ curl --show-error --fail-early --request DELETE http://"$BINDADDR":"$PORT""$ENDP
   -H "Authorization: $TOKEN"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
@@ -159,9 +163,14 @@ curl --show-error --fail-early --request DELETE http://"$BINDADDR":"$PORT""$ENDP
   -H "Authorization: $TOKEN"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ((ERROR++));
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
 
-exit $ERROR;
+if [ "$ERROR" -gt 0 ]; then
+  echo "$ERROR errors occured!"
+else
+  echo "No errors!"
+fi
+exit "$ERROR";
