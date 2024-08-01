@@ -9,4 +9,4 @@ RUN nimble -y install jester norm checksums
 RUN nimble build -d:release
 
 FROM scratch AS runner
-COPY --from=builder /src/server .
+COPY --from=builder /src/glimpse .

@@ -11,4 +11,4 @@ RUN nimble build -d:release
 ARG PORT=8080
 EXPOSE $PORT
 
-ENTRYPOINT ["./server"]
+ENTRYPOINT ["./glimpse"]

@@ -3,7 +3,7 @@ author        = "Array in a Matrix"
 description   = "Glimpse backend server."
 license       = "AGPL-3.0-or-later"
 
-bin           = @["server"]
+bin           = @["glimpse"]
 srcDir        = "src"
 backend       = "c"
 
