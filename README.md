@@ -24,6 +24,12 @@ Compile and run:
 nimble run
 ```
 
+Run unit tests:
+
+```sh
+nimble test
+```
+
 ### Docker
 
 To compile the binary only, run the following (executable will be found in `/bin/`):
