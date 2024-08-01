@@ -25,7 +25,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
     delete "/api/v1/userCompletely":
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token."
+        resp Http403, "Invalid token.\n"
 
       discard waitFor purgeUserFiles(H"Authorization")
       db.delete(user)
@@ -40,7 +40,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
     delete "/api/v1/user":
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token."
+        resp Http403, "Invalid token.\n"
 
       db.delete(user)
 
