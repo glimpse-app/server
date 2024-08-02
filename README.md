@@ -35,7 +35,7 @@ nimble test
 To compile the binary only, run the following (executable will be found in `/bin/`):
 
 ```sh
-docker buildx build -t glimpse-server:latest --output=bin --target=runner -f
+docker buildx build -t glimpse-server:latest --output=bin --target=runner -f bin.dockerfile .
 ```
 
 To deploy an instance of glimpse within docker, run:
