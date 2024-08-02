@@ -1,0 +1,30 @@
+services:
+
+  glimpse:
+    # build: .
+    image: glimpse-server:latest
+    restart: always
+    ports: 
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:latest
+    restart: always
+    user: postgres
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "postgresql"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  psql-data: {}
