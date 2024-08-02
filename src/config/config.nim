@@ -46,7 +46,7 @@ proc getConfig(): Cfg =
     # database
     db: config.get("Database", "db", "postgresql"),
     dbHost: config.get("Database", "dbHost", "0.0.0.0"),
-    dbUser: config.get("Database", "dbUser", "user"),
+    dbUser: config.get("Database", "dbUser", "postgres"),
     dbPassword: config.get("Database", "dbPassword", "postgresql"),
     dbDatabase: config.get("Database", "dbDatabase", ""),
     # general
