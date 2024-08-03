@@ -81,13 +81,13 @@ Each endpoint has comments describing what type of request it is and what parame
 Example requests using `cURL`, more examples can be found in `/tests/`:
 
 ```sh
-curl -X <POST|GET|PUT|DELETE> <Endpoint URI> -H '<Request Body Contents>'
+curl -X <POST|GET|PUT|DELETE> <Endpoint URI> -H '<Request Header Contents>'
 ```
 
 ```sh
-curl -X POST http://localhost:5000/api/v1/newUser -H 'Username=Array' -H 'Password=i8Vl8XZaVRiZFsZ'
+curl -X POST http://0.0.0.0:8080/api/v1/newUser -H 'Username=Array' -H 'Password=i8Vl8XZaVRiZFsZ'
 ```
 
 ```sh
-curl -X POST -H "Authorization: <access_token>" -F "file=@image.png" http://localhost:5000/api/v1/newFile
+curl -X POST -H "Authorization: <access_token>" -F "file=@image.png" http://0.0.0.0:8080/api/v1/newFile
 ```
