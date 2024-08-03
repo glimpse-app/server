@@ -158,6 +158,7 @@ fi; printf "%b\n" "$CLR";
 
 ENDPOINT="/api/v1/userCompletely"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
+TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=testUser1" -d "password=$PASSWORD" -d "email=test@example.xyz" | jq ".[0].token" | tr -d '"')
 
 curl --show-error --fail-with-body --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN"
