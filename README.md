@@ -38,7 +38,7 @@ To compile the binary only, run the following (executable will be found in `/bin
 docker buildx build -t glimpse-server:latest --output=bin --target=runner -f bin.dockerfile .
 ```
 
-To deploy an instance of glimpse within docker, run:
+To deploy an instance of glimpse within docker, run the following (make sure to update the database's host accordingly):
 
 ```sh
 docker buildx build -t glimpse-server:latest .

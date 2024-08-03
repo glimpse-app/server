@@ -17,8 +17,8 @@ const defaultConf* =
 [Database]
 ; 2 database types are supported PostgreSQL or SQLite.
 #db = postgresql
-; IP address of database.
-#dbHost = "0.0.0.0"
+; IP address or domain of the database.
+#dbHost = "db"
 ; Database user.
 #dbUser = "postgres"
 ; Database Password.

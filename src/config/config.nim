@@ -45,7 +45,7 @@ proc getConfig(): Cfg =
     appName: config.get("Server", "appName", ""),
     # database
     db: config.get("Database", "db", "postgresql"),
-    dbHost: config.get("Database", "dbHost", "0.0.0.0"),
+    dbHost: config.get("Database", "dbHost", "db"),
     dbUser: config.get("Database", "dbUser", "postgres"),
     dbPassword: config.get("Database", "dbPassword", "postgresql"),
     dbDatabase: config.get("Database", "dbDatabase", ""),

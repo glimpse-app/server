@@ -1,8 +1,8 @@
 services:
 
-  glimpse:
-    # build: .
-    image: glimpse-server:latest
+  api:
+    build: .
+    # image: glimpse-server:latest
     restart: always
     ports: 
       - "8080:8080"
@@ -14,8 +14,8 @@ services:
     image: postgres:latest
     restart: always
     user: postgres
-    # ports:
-    #   - 5432:5432
+    ports:
+      - 5432:5432
     volumes:
       - psql-data:/var/lib/postgresql/data
     environment:
