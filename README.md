@@ -73,7 +73,7 @@ docker compose down
 
 ### Configuration
 
-Glimpse will create the default configuration file, `config.ini`, in the root of the directory if it does not exist. Configuration relating to web framework, [Jester](https://github.com/dom96/jester), is under the `Server` section. Database configuration is under the `Database` section. Other configuration variables are under `General`. If running glimpse using the docker image, `docker run ...`, make sure to adjust container's network pointing it to the database (Use `network_mode: host` if database is running from host).
+Glimpse will create the default configuration file, `config.ini`, in the root of the directory if it does not exist. Configuration relating to web framework, [Jester](https://github.com/dom96/jester), is under the `Server` section. Database configuration is under the `Database` section. Other configuration variables are under `General`. If running glimpse using the docker image, `docker run ...`, make sure to adjust container's network pointing it to the database (When using docker compose, use `network_mode: host` if database is running from host).
 
 ### API Endpoints
 
