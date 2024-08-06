@@ -50,4 +50,4 @@ proc createUploadRoutes*(cfg: Cfg) =
 
       # write the file from memory
       writeFile(filePath, fileData)
-      resp Http200, "[{}]\n", "application/json"
+      resp Http200, "[]\n", "application/json"

@@ -30,7 +30,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
       discard waitFor purgeUserFiles(H"Authorization")
       db.delete(user)
 
-      resp Http200, "[{}]\n", "application/json"
+      resp Http200, "[]\n", "application/json"
 
     #[
       request parameters:
@@ -44,7 +44,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
 
       db.delete(user)
 
-      resp Http200, "[{}]\n", "application/json"
+      resp Http200, "[]\n", "application/json"
 
     #! endpoint crashes server
     #[
@@ -68,7 +68,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
       dec user.fileCount
       db.update(user)
       removeFile(file.path)
-      resp Http200, "[{}]\n", "application/json"
+      resp Http200, "[]\n", "application/json"
 
     #[
       request parameters:
@@ -94,4 +94,4 @@ proc createDeletionRoutes*(cfg: Cfg) =
       db.update(user)
       removeDir(cfg.uploadDir & user.username & "/")
 
-      resp Http200, "[{}]\n", "application/json"
+      resp Http200, "[]\n", "application/json"
