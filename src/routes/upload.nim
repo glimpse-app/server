@@ -25,12 +25,20 @@ proc createUploadRoutes*(cfg: Cfg) =
       let fileName = request.formData["file"].fields["filename"]
       var fileTags: string
 
+      block UniqueFileNameCheck:
+        try:
+          var file = newFile()
+          db.select(file, """"File".name = $1""", fileName)
+        except NotFoundError:
+          break UniqueFileNameCheck
+        resp Http403, "A file with that name already exists.\n"
+
       # this is a hack, I hate this
       # convert to JsonNode to ensure we were given a proper JSON
       # convert back to a string because db doesnt allow for JsonNode
       try:
         fileTags = $parseJson(request.formData[
-            "tags"].body) # TODO: sanitize, only an array of strings (e.g. nested objects/arrays)
+            "tags"].body) # TODO: sanitize, only an array of strings (e.g. remove nested objects/arrays)
       except KeyError:
         fileTags = "[]"
       except: # "except JsonError:" doesn't work for some reason
