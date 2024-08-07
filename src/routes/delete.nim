@@ -60,7 +60,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
 
       var file = newFile()
       try:
-        db.select(file, """"File".name = $1""", H"Name")
+        db.select(file, """"File".name = $1 AND "File".owner = $2""", H"Name", user)
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
@@ -83,7 +83,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
 
       var listOfFiles = @[newFile()]
       try:
-        db.select(listOfFiles, """"File".owner = $1""", user.id)
+        db.select(listOfFiles, """"File".owner = $1""", user)
       except NotFoundError: # this error does not occur even if no files exist
         resp Http404, "Files do not exist.\n"
 
