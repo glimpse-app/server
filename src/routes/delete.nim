@@ -64,10 +64,10 @@ proc createDeletionRoutes*(cfg: Cfg) =
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
+      removeFile(file.path)
       db.delete(file)
       dec user.fileCount
       db.update(user)
-      removeFile(file.path)
       resp Http200, "[]\n", "application/json"
 
     #[
