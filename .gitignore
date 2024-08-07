@@ -4,7 +4,6 @@ nimblecache/
 htmldocs/
 
 # executables
-/server
 /glimpse
 /tests/test
 
