@@ -36,11 +36,11 @@ proc createUpdateRoutes*() =
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
-      block FileDoesNotExist:
+      block FileDoesNotExistCheck:
         try:
           db.select(file, """"File".name = $1""", newName)
         except NotFoundError:
-          break FileDoesNotExist
+          break FileDoesNotExistCheck
         resp Http403, "File with that name already exists.\n"
 
       let newPath = file.path[0..^file.name.len+1] & newName
