@@ -10,11 +10,12 @@ type
     staticDir*: string
     appName*: string
     # database
-    db*: string
+    dbType*: string
     dbHost*: string
     dbUser*: string
     dbPassword*: string
     dbDatabase*: string
+    # general
     uploadDir*: string
 
 
@@ -44,7 +45,7 @@ proc getConfig(): Cfg =
     staticDir: config.get("Server", "staticDir", "./public/"),
     appName: config.get("Server", "appName", ""),
     # database
-    db: config.get("Database", "db", "postgresql"),
+    dbType: config.get("Database", "dbType", "postgresql"),
     dbHost: config.get("Database", "dbHost", "db"),
     dbUser: config.get("Database", "dbUser", "postgres"),
     dbPassword: config.get("Database", "dbPassword", "postgresql"),
