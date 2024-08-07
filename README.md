@@ -52,7 +52,7 @@ docker run -it --rm -p 8080:8080 glimpse-server:latest
 Use the following to run a temporary PostgreSQL database, (**DO NOT USE IN PRODUCTION**):
 
 ```sh
-docker run -it --rm -e POSTGRES_USER=user -e POSTGRES_PASSWORD=postgresql -p 5432:5432 postgres
+docker run -it --rm -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgresql -p 5432:5432 postgres
 ```
 
 #### Deploy using docker compose
