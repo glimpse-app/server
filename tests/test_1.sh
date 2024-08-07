@@ -13,9 +13,9 @@ CONFIGFILE="../config.ini"
 PASSWORD=$(pwgen 50 1)
 ERROR=0
 
-if [ ! -f $CONFIGFILE ]; then
-  ERROR=$((ERROR+1))
-fi
+MKUSER(){
+  TESTUSER="testUser_$(pwgen 4 1)"
+}
 
 if grep -q ^bindAddr $CONFIGFILE; then
   BINDADDR=$(grep ^bindAddr $CONFIGFILE | tr -d '"' | tr -d '[:blank:]' | cut -c 10-)
@@ -32,12 +32,11 @@ fi
 # tests
 
 ENDPOINT="/api/v1/newUser"
-
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
-
+MKUSER
 curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""$ENDPOINT" \
-  -d "username=testUser"  -d "password=$PASSWORD"  \
-  -d "email=test@example.xyz"
+  -d "username=$TESTUSER"  -d "password=$PASSWORD"  \
+  -d "email=$TESTUSER@example.xyz"
 
 if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
 else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
@@ -47,7 +46,7 @@ fi; printf "%b\n" "$CLR";
 
 ENDPOINT="/api/v1/newSession"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
-TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=testUser1" -d "password=$PASSWORD" -d "email=test@example.xyz" | jq ".[0].token" | tr -d '"')
+MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".[0].token" | tr -d '"')
 
 curl --show-error --fail-with-body --request GET http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN"
@@ -60,7 +59,7 @@ fi; printf "%b\n" "$CLR";
 
 ENDPOINT="/api/v1/newFile"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
-TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=testUser2" -d "password=$PASSWORD" -d "email=test@example.xyz" | jq ".[0].token" | tr -d '"')
+MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".[0].token" | tr -d '"')
 
 curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN" -F "file=@image.png"
@@ -72,7 +71,6 @@ fi; printf "%b\n" "$CLR";
 
 
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
-TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=testUser2" -d "password=$PASSWORD" -d "email=test@example.xyz" | jq ".[0].token" | tr -d '"')
 
 curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN" -F "file=@image2.jpg" -F 'tags=["4k HDR", "Fruit", "Yummy"]'
@@ -158,7 +156,7 @@ fi; printf "%b\n" "$CLR";
 
 ENDPOINT="/api/v1/userCompletely"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
-TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=testUser1" -d "password=$PASSWORD" -d "email=test@example.xyz" | jq ".[0].token" | tr -d '"')
+MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".[0].token" | tr -d '"')
 
 curl --show-error --fail-with-body --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN"
