@@ -19,7 +19,7 @@ proc createDownloadRoutes*() =
 
       var file = newFile()
       try:
-        db.select(file, """"File".name = $1""", H"Name")
+        db.select(file, """"File".name = $1 AND "File".owner = $2""", H"Name")
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
