@@ -16,8 +16,6 @@ services:
     user: postgres
     ports:
       - 5432:5432
-    volumes:
-      - psql-data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgresql
     healthcheck:
@@ -25,6 +23,3 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
-
-volumes:
-  psql-data: {}
