@@ -15,7 +15,7 @@ const defaultConf* =
 #appName = ""
 
 [Database]
-; 2 database types are supported PostgreSQL or SQLite.
+; Currently only PostgreSQL is supported but Sqlite may be added in the future.
 #dbType = postgresql
 ; IP address or domain of the database.
 #dbHost = "db"
