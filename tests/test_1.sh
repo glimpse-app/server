@@ -80,7 +80,6 @@ else printf "%bTest: Fail - $ENDPOINT 2" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
-#! something broken here 
 ENDPOINT="/api/v1/newFileName"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
 
@@ -117,16 +116,16 @@ else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
-#! this endpoint crashes the server
-# ENDPOINT="/api/v1/file"
-# printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
 
-# curl --show-error --fail-with-body --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
-#   -H "Authorization: $TOKEN" -H "Name: image2.jpg"
+ENDPOINT="/api/v1/file"
+printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
 
-# if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
-# else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
-# fi; printf "%b\n" "$CLR";
+curl --show-error --fail-with-body --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
+  -H "Authorization: $TOKEN" -H "Name: image2.jpg"
+
+if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
+fi; printf "%b\n" "$CLR";
 
 
 
