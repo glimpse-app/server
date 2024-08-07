@@ -15,10 +15,22 @@ proc createAuthenticationRoutes*() =
       returns: JSON
     ]#
     post "/api/v1/newUser":
-      # TODO: sanitization + check if username and email are unique
       if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or
           @"password".isEmptyOrWhitespace():
         resp Http403, "Not all required parameters are provided.\n"
+
+      block UniqueParametersCheck:
+        try:
+          var user = newUser()
+          db.select(user, """"User".username = $1""", @"username")
+        except NotFoundError:
+          try:
+            var user = newUser()
+            db.select(user, """"User".email = $1""", @"email")
+          except NotFoundError:
+            break UniqueParametersCheck
+          resp Http403, "A user with that email already exists.\n"
+        resp Http403, "A user with that username already exists.\n"
 
       var user = newUser(@"username", @"email", @"password")
       db.insert(user)

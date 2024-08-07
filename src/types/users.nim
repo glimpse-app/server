@@ -1,13 +1,13 @@
 import std/oids
-import norm/[model, postgres]
+import norm/[model, postgres, pragmas]
 import checksums/sha3
 
 # define user object
 type User* = ref object of Model
-  username*: string # should be unique
-  email*: string    # should be unique
+  username* {.unique.}: string
+  email* {.unique.}: string
   password*: string # sha3-512 hash
-  token*: string    # should be unique
+  token* {.unique.}: string
   fileCount*: int = 0
 
 # checks if the provided token exists in the database
