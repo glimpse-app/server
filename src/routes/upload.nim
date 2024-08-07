@@ -25,14 +25,6 @@ proc createUploadRoutes*(cfg: Cfg) =
       let fileName = request.formData["file"].fields["filename"]
       var fileTags: string
 
-      block UniqueFileNameCheck:
-        try:
-          var file = newFile()
-          db.select(file, """"File".name = $1""", fileName)
-        except NotFoundError:
-          break UniqueFileNameCheck
-        resp Http403, "A file with that name already exists.\n"
-
       # this is a hack, I hate this
       # convert to JsonNode to ensure we were given a proper JSON
       # convert back to a string because db doesnt allow for JsonNode
@@ -53,7 +45,10 @@ proc createUploadRoutes*(cfg: Cfg) =
 
       # create new file object and add to db
       var file = newFile(user, filePath, fileName, fileTags)
-      db.insert(file)
+      try:
+        db.insert(file)
+      except DbError:
+        resp Http403, "A file with this name already exists.\n"
       db.update(user)
 
       # write the file from memory
