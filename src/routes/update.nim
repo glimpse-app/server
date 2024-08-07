@@ -32,13 +32,13 @@ proc createUpdateRoutes*() =
 
       var file = newFile()
       try:
-        db.select(file, """"File".name = $1""", oldName)
+        db.select(file, """"File".name = $1 AND "File".owner = $2""", oldName, user)
       except NotFoundError:
         resp Http404, "File does not exist.\n"
 
       block FileDoesNotExistCheck:
         try:
-          db.select(file, """"File".name = $1""", newName)
+          db.select(file, """"File".name = $1 AND "File".owner = $2""", newName, user)
         except NotFoundError:
           break FileDoesNotExistCheck
         resp Http403, "File with that name already exists.\n"
@@ -49,7 +49,7 @@ proc createUpdateRoutes*() =
       # rename file in db
       file.path = newPath
       file.name = newName
-      db.update(file) #! bug: file is being removed from db?
+      db.update(file)
 
       var fileInfo: string
       with fileInfo:
