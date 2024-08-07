@@ -1,0 +1,24 @@
+# nim directories
+nimcache/
+nimblecache/
+htmldocs/
+
+# executables
+/glimpse
+/tests/test
+
+# file uploads directory
+uploads/
+
+# docker build directory
+bin/
+
+# database
+*.db
+
+# configuration
+/config.ini
+
+# not needed directories inside docker
+.github/
+.vscode/
