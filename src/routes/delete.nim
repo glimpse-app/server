@@ -1,4 +1,4 @@
-import std/[strutils, os, httpclient, strformat]
+import std/[strutils, os, httpclient, strformat, with]
 import jester
 import norm/[model, postgres]
 import ../types/[users, files]
@@ -68,7 +68,13 @@ proc createDeletionRoutes*(cfg: Cfg) =
       db.delete(file)
       dec user.fileCount
       db.update(user)
-      resp Http200, "[]\n", "application/json"
+
+      var userFileCount: string
+      with userFileCount:
+        add "[{"
+        add("\"fileCount\": \"" & $user.fileCount & "\"")
+        add "}]"
+      resp Http200, userFileCount & "\n", "application/json"
 
     #[
       request parameters:
