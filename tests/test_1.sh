@@ -75,8 +75,8 @@ printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
 curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN" -F "file=@image2.jpg" -F 'tags=["4k HDR", "Fruit", "Yummy"]'
 
-if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT 2" "$YAY";
-else printf "%bTest: Fail - $ENDPOINT 2" "$NAY"; ERROR=$((ERROR+1));
+if test $? -eq 0; then printf "%bTest: Success - $ENDPOINT" "$YAY";
+else printf "%bTest: Fail - $ENDPOINT" "$NAY"; ERROR=$((ERROR+1));
 fi; printf "%b\n" "$CLR";
 
 
