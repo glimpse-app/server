@@ -1,4 +1,4 @@
-import std/[strutils, os, json]
+import std/[strutils, os, json, with]
 import jester
 import norm/[model, postgres]
 import ../types/[users, files]
@@ -53,4 +53,9 @@ proc createUploadRoutes*(cfg: Cfg) =
 
       # write the file from memory
       writeFile(filePath, fileData)
-      resp Http200, "[]\n", "application/json"
+      var userFileCount: string
+      with userFileCount:
+        add "[{"
+        add("\"fileCount\": \"" & $user.fileCount & "\"")
+        add "}]"
+      resp Http200, userFileCount & "\n", "application/json"
