@@ -29,4 +29,8 @@ const defaultConf* =
 [General]
 ; This is the path to the directory which contains all users' uploaded files.
 #uploadDir = "./uploads/"
+; Allows creating and logging to the log file. If this is on, it forces `enableErrorLogs` on as well.
+#enableLogs = "true"
+; Same as `enableLogs` but only for error or fatal messages. Forced on, if `enableLogs` is on.
+#enableErrorLogs = "true" 
 """

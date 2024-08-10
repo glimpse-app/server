@@ -17,6 +17,8 @@ type
     dbDatabase*: string
     # general
     uploadDir*: string
+    enableLogs*: bool
+    enableErrorLogs*: bool
 
 
 #! Taken from https://github.com/zedeus/nitter
@@ -52,6 +54,8 @@ proc getConfig(): Cfg =
     dbDatabase: config.get("Database", "dbDatabase", ""),
     # general
     uploadDir: config.get("General", "uploadDir", "./uploads/"),
+    enableLogs: config.get("General", "enableLogs", true),
+    enableErrorLogs: config.get("General", "enableErrorLogs", true),
   )
 
 var cfg* {.threadvar.}: Cfg
