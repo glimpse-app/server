@@ -1,4 +1,4 @@
-import std/[strutils, os, json, asyncdispatch, httpclient, with]
+import std/[strutils, os, json, asyncdispatch, httpclient, with, logging]
 
 import jester
 import checksums/sha3
@@ -8,6 +8,34 @@ import ./config/config
 import ./[database, helpers]
 import ./types/[users, files]
 import ./routes/[auth, delete, download, upload, update]
+
+const logo = """
+
+    █████████  ████   ███                                            
+  ███░░░░░███░░███  ░░░                                             
+  ███     ░░░  ░███  ████  █████████████   ████████   █████   ██████ 
+░███          ░███ ░░███ ░░███░░███░░███ ░░███░░███ ███░░   ███░░███
+░███    █████ ░███  ░███  ░███ ░███ ░███  ░███ ░███░░█████ ░███████ 
+░░███  ░░███  ░███  ░███  ░███ ░███ ░███  ░███ ░███ ░░░░███░███░░░  
+  ░░█████████  █████ █████ █████░███ █████ ░███████  ██████ ░░██████ 
+  ░░░░░░░░░  ░░░░░ ░░░░░ ░░░░░ ░░░ ░░░░░  ░███░░░  ░░░░░░   ░░░░░░  
+                                          ░███                      
+                                          █████                     
+                                          ░░░░░                      
+"""
+
+const logFormattingString = "[$date $time] - [$levelname]: "
+
+if cfg.enableLogs:
+  addHandler newConsoleLogger(fmtStr = logFormattingString)
+  addHandler newRollingFileLogger("glimpse-logs.log",
+      fmtStr = logFormattingString)
+
+if cfg.enableErrorLogs:
+  addHandler newRollingFileLogger("glimpse-errors.log",
+      fmtStr = logFormattingString, levelThreshold = lvlError)
+
+log(lvlAll, logo)
 
 settings:
   bindAddr = cfg.bindAddr
