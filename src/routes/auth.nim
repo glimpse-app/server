@@ -1,6 +1,7 @@
-import std/[strutils, with]
+import std/[strutils, with, logging]
 import jester
-import norm/[model, postgres]
+import norm/model
+import norm/postgres except error
 import checksums/sha3
 import ../types/users
 import ../[database, helpers]
@@ -15,9 +16,11 @@ proc createAuthenticationRoutes*() =
       returns: JSON
     ]#
     post "/api/v1/newUser":
+      info "Endpoint used.\n" & reqInfo
+
       if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or
           @"password".isEmptyOrWhitespace():
-        resp Http403, "Not all required parameters are provided.\n"
+        respErr "Registeration failed, not all parameters provided.\n"
 
       block UniqueParametersCheck:
         try:
@@ -29,8 +32,8 @@ proc createAuthenticationRoutes*() =
             db.select(user, """"User".email = $1""", @"email")
           except NotFoundError:
             break UniqueParametersCheck
-          resp Http403, "A user with that email already exists.\n"
-        resp Http403, "A user with that username already exists.\n"
+          respErr "Registeration failed, email already in use.\n"
+        respErr "Registeration failed, username already in use.\n"
 
       var user = newUser(@"username", @"email", @"password")
       db.insert(user)
@@ -45,6 +48,7 @@ proc createAuthenticationRoutes*() =
         add("\"fileCount\": \"" & $user.fileCount & "\"")
         add "}]"
 
+      info "User created.\n" & reqInfo
       resp Http200, userProfile & "\n", "application/json"
 
     #[
@@ -56,12 +60,13 @@ proc createAuthenticationRoutes*() =
       returns: JSON
     ]#
     get "/api/v1/newSession":
+      info "Endpoint used.\n" & reqInfo
+
       var user = newUser()
 
       if not H"Authorization".isEmptyOrWhitespace():
-
         if not db.validToken(user, H"Authorization"):
-          resp Http403, "Invalid token.\n"
+          respErr "Invalid token.\n"
 
         db.generateToken(user)
 
@@ -69,11 +74,11 @@ proc createAuthenticationRoutes*() =
         try:
           db.select(user, """"User".username = $1""", H"Username")
         except NotFoundError:
-          resp Http403, "Incorrect username or password.\n" # fails if username is wrong but mentions password to obfuscates if a user exists or not
+          respErr"Incorrect username or password.\n" # fails if username is wrong but mentions password to obfuscates if a user exists or not
         if user.password == $Sha3_512.secureHash($H"Password"):
           db.generateToken(user)
         else:
-          resp Http403, "Incorrect username or password.\n" # fails if password is wrong but mentions username to obfuscates if a user exists or not
+          respErr"Incorrect username or password.\n" # fails if password is wrong but mentions username to obfuscates if a user exists or not
 
       var userToken: string
       with userToken:
@@ -81,5 +86,6 @@ proc createAuthenticationRoutes*() =
         add("\"token\": \"" & user.token & "\"")
         add "}]"
 
+      info "User's token replaced.\n" & reqInfo
       resp Http200, userToken & "\n", "application/json"
 
