@@ -1,6 +1,6 @@
 import std/strutils
 import jester
-import norm/postgres
+import norm/postgres except error
 import ../types/[users, files]
 import ../[database, helpers]
 

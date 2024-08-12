@@ -1,6 +1,7 @@
 import std/[strutils, os, httpclient, strformat, with]
 import jester
-import norm/[model, postgres]
+import norm/model
+import norm/postgres except error
 import ../types/[users, files]
 import ../[database, helpers]
 import ../config/config
