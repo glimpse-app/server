@@ -32,7 +32,7 @@ const defaultConf* =
 ; Allows creating and logging to the log file. If this is on, it forces `enableErrorLogs` on as well.
 #enableLogs = "true"
 ; Includes debugging messages in logs.
-#enableDebugLogs = "true"
+# enableDebugLogs = "false"
 ; Same as `enableLogs` but only for error or fatal messages. Forced on, if `enableLogs` is on.
 #enableErrorLogs = "true" 
 """

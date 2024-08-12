@@ -59,7 +59,7 @@ proc getConfig(): Cfg =
     # general
     uploadDir: config.get("General", "uploadDir", "./uploads/"),
     enableLogs: config.get("General", "enableLogs", true),
-    enableDebugLogs: config.get("General", "enableDebugLogs", true),
+    enableDebugLogs: config.get("General", "enableDebugLogs", false),
     enableErrorLogs: config.get("General", "enableErrorLogs", true),
   )
 
