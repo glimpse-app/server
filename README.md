@@ -12,7 +12,7 @@ Install needed libraries:
 nimble install jester norm checksums
 ```
 
-Build glimpse executable (if you want the SQL queries logged, compile with `normDebug`):
+Build the glimpse executable (if you want the SQL queries logged, compile with `normDebug`):
 
 ```sh
 nimble build
