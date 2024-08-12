@@ -1,4 +1,4 @@
-import std/[parsecfg, os, strutils]
+import std/[parsecfg, os, strutils, logging]
 import ./defConf
 
 type
@@ -36,9 +36,12 @@ proc getConfig(): Cfg =
   const conf = "config.ini"
 
   if not conf.fileExists():
+    warn "No configuration file exists."
     writeFile(conf, defaultConf)
+    warn "Created default configuration file."
 
   var config = loadConfig(conf)
+  info "Loading configuration file."
 
   return Cfg(
     # server
@@ -49,7 +52,7 @@ proc getConfig(): Cfg =
     appName: config.get("Server", "appName", ""),
     # database
     dbType: config.get("Database", "dbType", "postgresql"),
-    dbHost: config.get("Database", "dbHost", "db"),
+    dbHost: config.get("Database", "dbHost", "0.0.0.0"),
     dbUser: config.get("Database", "dbUser", "postgres"),
     dbPassword: config.get("Database", "dbPassword", "postgresql"),
     dbDatabase: config.get("Database", "dbDatabase", ""),
