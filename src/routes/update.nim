@@ -1,4 +1,4 @@
-import std/[strutils, os, with]
+import std/[strutils, os, with, logging]
 import jester
 import norm/postgres except error
 import ../types/[users, files]
@@ -6,25 +6,18 @@ import ../[database, helpers]
 
 proc createUpdateRoutes*() =
   router update:
-    #[
-      request parameters:
-        ???
-      returns:
-        ???
-    ]#
-    # put "/api/v1/newTags":
-    
+
     #[
       request parameters:
         token          -  string         -  required via header
         name           -  string         -  old file name via header
         name           -  string         -  new file name via header
-      returns: JSON
     ]#
     put "/api/v1/newFileName":
+      debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       let
         oldName = H"Old name"
@@ -34,14 +27,14 @@ proc createUpdateRoutes*() =
       try:
         db.select(file, """"File".name = $1 AND "File".owner = $2""", oldName, user)
       except NotFoundError:
-        resp Http404, "File does not exist.\n"
+        respErr Http404, "File does not exist.\n"
 
       block FileDoesNotExistCheck:
         try:
           db.select(file, """"File".name = $1 AND "File".owner = $2""", newName, user)
         except NotFoundError:
           break FileDoesNotExistCheck
-        resp Http403, "File with that name already exists.\n"
+        respErr "File with that name already exists.\n"
 
       let newPath = file.path[0..^file.name.len+1] & newName
       moveFile(file.path, newPath)
@@ -58,5 +51,5 @@ proc createUpdateRoutes*() =
         add("\"tags\": \"" & file.tags & "\"")
         add "}]"
 
-
+      info "File renamed.\n" & reqInfo
       resp Http200, fileInfo & "\n", "application/json"

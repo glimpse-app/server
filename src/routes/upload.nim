@@ -1,4 +1,4 @@
-import std/[strutils, os, json, with]
+import std/[strutils, os, json, with, logging]
 import jester
 import norm/model
 import norm/postgres except error
@@ -16,10 +16,11 @@ proc createUploadRoutes*(cfg: Cfg) =
       returns: JSON
     ]#
     post "/api/v1/newFile":
+      debug "Endpoint used.\n" & reqInfo
       # fills the new `user` var with saved user data from database
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       # pull request form data arguments
       let fileData = request.formData["file"].body
@@ -35,7 +36,7 @@ proc createUploadRoutes*(cfg: Cfg) =
       except KeyError:
         fileTags = "[]"
       except: # "except JsonError:" doesn't work for some reason
-        resp Http400, "Bad JSON.\n"
+        respErr Http400, "Bad JSON.\n"
 
       # create needed directories if they don't exist already
       let directory = cfg.uploadDir & user.username & "/"
@@ -49,7 +50,7 @@ proc createUploadRoutes*(cfg: Cfg) =
       try:
         db.insert(file)
       except DbError:
-        resp Http403, "A file with this name already exists.\n"
+        respErr "A file with this name already exists.\n"
       db.update(user)
 
       # write the file from memory
@@ -59,4 +60,6 @@ proc createUploadRoutes*(cfg: Cfg) =
         add "[{"
         add("\"fileCount\": \"" & $user.fileCount & "\"")
         add "}]"
+
+      info "File uploaded.\n" & reqInfo
       resp Http200, userFileCount & "\n", "application/json"

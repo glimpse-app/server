@@ -16,7 +16,7 @@ proc createAuthenticationRoutes*() =
       returns: JSON
     ]#
     post "/api/v1/newUser":
-      info "Endpoint used.\n" & reqInfo
+      debug "Endpoint used.\n" & reqInfo
 
       if @"username".isEmptyOrWhitespace() or @"email".isEmptyOrWhitespace() or
           @"password".isEmptyOrWhitespace():
@@ -60,7 +60,7 @@ proc createAuthenticationRoutes*() =
       returns: JSON
     ]#
     get "/api/v1/newSession":
-      info "Endpoint used.\n" & reqInfo
+      debug "Endpoint used.\n" & reqInfo
 
       var user = newUser()
 
@@ -86,6 +86,6 @@ proc createAuthenticationRoutes*() =
         add("\"token\": \"" & user.token & "\"")
         add "}]"
 
-      info "User's token replaced.\n" & reqInfo
+      info "Replaced token.\n" & reqInfo
       resp Http200, userToken & "\n", "application/json"
 

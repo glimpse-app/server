@@ -1,4 +1,4 @@
-import std/strutils
+import std/[strutils, logging]
 import jester
 import norm/postgres except error
 import ../types/[users, files]
@@ -13,16 +13,19 @@ proc createDownloadRoutes*() =
       returns: string/binary 
     ]#
     get "/api/v1/fileByName":
+      debug "Endpoint used.\n" & reqInfo
+
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       var file = newFile()
       try:
         db.select(file, """"File".name = $1 AND "File".owner = $2""", H"Name", user)
       except NotFoundError:
-        resp Http404, "File does not exist.\n"
+        respErr Http404, "File does not exist.\n"
 
+      info "User downloaded file.\n" & reqInfo
       sendFile file.path
 
     #[
@@ -31,15 +34,16 @@ proc createDownloadRoutes*() =
       returns: JSON
     ]#
     get "/api/v1/listOfAllFiles":
+      debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       var listOfFiles = @[newFile()]
       try:
         db.select(listOfFiles, """"File".owner = $1""", user.id)
       except NotFoundError:
-        resp Http404, "Files does not exist.\n"
+        respErr Http404, "Files does not exist.\n"
 
       var allFiles: string
 
@@ -48,4 +52,5 @@ proc createDownloadRoutes*() =
             "\", \"tags\": " & file.tags & "},"
       allFiles = "[" & allFiles[0..^2] & "]" # trim last comma
 
+      info "List user's file.\n" & reqInfo
       resp Http200, allFiles & "\n", "application/json"
