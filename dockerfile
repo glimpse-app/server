@@ -8,6 +8,7 @@ RUN apt-get -y install libpq5
 
 RUN nimble -y install jester norm checksums
 RUN nimble build -d:release
+RUN echo "[Database]\ndbHost = db" > "config.ini"
 
 ARG PORT=8080
 EXPOSE $PORT
