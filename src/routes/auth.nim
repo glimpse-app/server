@@ -66,7 +66,7 @@ proc createAuthenticationRoutes*() =
 
       if not H"Authorization".isEmptyOrWhitespace():
         if not db.validToken(user, H"Authorization"):
-          respErr "Invalid token.\n"
+          resp Http403, "Invalid token.\n"
 
         db.generateToken(user)
 

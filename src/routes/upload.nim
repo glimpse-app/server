@@ -20,7 +20,7 @@ proc createUploadRoutes*(cfg: Cfg) =
       # fills the new `user` var with saved user data from database
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        respErr "Invalid token.\n"
+        resp Http403, "Invalid token.\n"
 
       # pull request form data arguments
       let fileData = request.formData["file"].body

@@ -1,3 +1,4 @@
+import std/logging
 import norm/[model, pragmas]
 import ./users
 
@@ -9,7 +10,8 @@ type File* = ref object of Model
   tags*: string #? This is a temporary hack should be `seq[string]` or `JsonNode` instead
 
               # creates a new file object and sets default values, recommended by the norm documentation
-func newFile*(user: User = newUser(), path: string = "", name: string = "",
+proc newFile*(user: User = newUser(), path: string = "", name: string = "",
     tags: string = ""): File =
   inc user.fileCount
+  debug "Creating new file.\n"
   File(owner: user, path: path, name: name, tags: tags)

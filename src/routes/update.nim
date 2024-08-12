@@ -17,7 +17,7 @@ proc createUpdateRoutes*() =
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        respErr "Invalid token.\n"
+        resp Http403, "Invalid token.\n"
 
       let
         oldName = H"Old name"

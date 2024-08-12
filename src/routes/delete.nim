@@ -28,7 +28,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        respErr "Invalid token.\n"
+        resp Http403, "Invalid token.\n"
 
       discard waitFor purgeUserFiles(H"Authorization")
       db.delete(user)
@@ -45,7 +45,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        respErr "Invalid token.\n"
+        resp Http403, "Invalid token.\n"
 
       db.delete(user)
 
@@ -62,7 +62,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        respErr "Invalid token.\n"
+        resp Http403, "Invalid token.\n"
 
       var file = newFile()
       try:
@@ -94,7 +94,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        respErr "Invalid token.\n"
+        resp Http403, "Invalid token.\n"
 
       var listOfFiles = @[newFile()]
       try:

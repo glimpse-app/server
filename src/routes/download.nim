@@ -17,7 +17,7 @@ proc createDownloadRoutes*() =
 
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        respErr "Invalid token.\n"
+        resp Http403, "Invalid token.\n"
 
       var file = newFile()
       try:
@@ -37,7 +37,7 @@ proc createDownloadRoutes*() =
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        respErr "Invalid token.\n"
+        resp Http403, "Invalid token.\n"
 
       var listOfFiles = @[newFile()]
       try:
