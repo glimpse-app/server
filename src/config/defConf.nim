@@ -18,7 +18,7 @@ const defaultConf* =
 ; Currently only PostgreSQL is supported but Sqlite may be added in the future.
 #dbType = postgresql
 ; IP address or domain of the database.
-#dbHost = "db"
+#dbHost = "0.0.0.0"
 ; Database user.
 #dbUser = "postgres"
 ; Database Password.
