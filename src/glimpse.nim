@@ -2,7 +2,8 @@ import std/[strutils, os, json, asyncdispatch, httpclient, with, logging]
 
 import jester
 import checksums/sha3
-import norm/[model, postgres]
+import norm/model
+import norm/postgres except error
 
 import ./config/config
 import ./[database, helpers]
@@ -27,15 +28,29 @@ const logo = """
 const logFormattingString = "[$date $time] - [$levelname]: "
 
 if cfg.enableLogs:
-  addHandler newConsoleLogger(fmtStr = logFormattingString)
+  var choosenThreshold: Level
+  if cfg.enableDebugLogs:
+    choosenThreshold = lvlDebug
+  else:
+    choosenThreshold = lvlInfo
+
+  addHandler newConsoleLogger(fmtStr = logFormattingString,
+      levelThreshold = choosenThreshold)
   addHandler newRollingFileLogger("glimpse-logs.log",
-      fmtStr = logFormattingString)
+      fmtStr = logFormattingString, levelThreshold = choosenThreshold)
 
 if cfg.enableErrorLogs:
   addHandler newRollingFileLogger("glimpse-errors.log",
       fmtStr = logFormattingString, levelThreshold = lvlError)
 
-log(lvlAll, logo)
+debug "Debug logs enabled!"
+info "Info logs enabled!"
+notice "Notice logs enabled!"
+warn "Warn logs enabled!"
+error "Error logs enabled!"
+fatal "Fatal logs enabled!"
+
+notice logo
 
 settings:
   bindAddr = cfg.bindAddr

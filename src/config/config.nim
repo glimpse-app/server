@@ -18,6 +18,7 @@ type
     # general
     uploadDir*: string
     enableLogs*: bool
+    enableDebugLogs*: bool
     enableErrorLogs*: bool
 
 
@@ -55,6 +56,7 @@ proc getConfig(): Cfg =
     # general
     uploadDir: config.get("General", "uploadDir", "./uploads/"),
     enableLogs: config.get("General", "enableLogs", true),
+    enableDebugLogs: config.get("General", "enableDebugLogs", true),
     enableErrorLogs: config.get("General", "enableErrorLogs", true),
   )
 
