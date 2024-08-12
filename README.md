@@ -9,7 +9,7 @@ This is the Glimpse API server.
 Install needed libraries:
 
 ```sh
-nimble install jester norm checksums
+nimble install jester norm checksums jsony
 ```
 
 Build the glimpse executable (if you want the SQL queries logged, compile with `normDebug`):
