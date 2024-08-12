@@ -59,12 +59,15 @@ settings:
   staticDir = cfg.staticDir
   appName = cfg.appName
 
+debug "Starting creating routes."
 createAuthenticationRoutes()
 createDeletionRoutes(cfg)
 createDownloadRoutes()
 createUploadRoutes(cfg)
 createUpdateRoutes()
+debug "Finished creating routes."
 
+debug "Starting Jester."
 routes:
   #[
     request parameters:
