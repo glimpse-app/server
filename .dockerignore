@@ -22,3 +22,6 @@ bin/
 # not needed directories inside docker
 .github/
 .vscode/
+
+# logs
+*.log
