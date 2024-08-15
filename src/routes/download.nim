@@ -39,12 +39,15 @@ proc createDownloadRoutes*() =
       if not db.validToken(user, H"Authorization"):
         respErr "Invalid token.\n"
 
-      var listOfFiles = @[newFile()]
+      var seqOfFiles = @[newFile()]
       try:
-        db.select(listOfFiles, """"File".owner = $1""", user.id)
+        db.select(seqOfFiles, """"File".owner = $1""", user.id)
       except NotFoundError:
         respErr Http404, "No file exists.\n"
 
-      info "List user's file.\n" & reqInfo
-      resp200 listOfFiles.toJson() # TODO: create new type without unneeded members, read data to it then resp as json. if all else fails -> edit File type to not include owner json in it? Maybe make user.password private?
+      var seqOfFileInfo = @[getFileInfo()]
+      for file in seqOfFiles:
+        seqOfFileInfo.add(getFileInfo(file))
 
+      info "List user's file.\n" & reqInfo
+      resp200 seqOfFileInfo.toJson()
