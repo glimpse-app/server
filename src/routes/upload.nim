@@ -1,4 +1,4 @@
-import std/[strutils, os, json, logging]
+import std/[strutils, os, logging]
 import jester
 import jsony
 import norm/model
@@ -27,16 +27,13 @@ proc createUploadRoutes*(cfg: Cfg) =
       let fileName = request.formData["file"].fields["filename"]
       var fileTags: string
 
-      # this is a hack, I hate this
-      # convert to JsonNode to ensure we were given a proper JSON
-      # convert back to a string because db doesnt allow for JsonNode
       try:
-        fileTags = $parseJson(request.formData[
-            "tags"].body) # TODO: sanitize, only an array of strings (e.g. remove nested objects/arrays)
+        # check if tags json sent is of seq[string], otherwise reject it.
+        fileTags = request.formData["tags"].body.fromJson(seq[string]).toJson()
       except KeyError:
         fileTags = "[]"
-      except: # "except JsonError:" doesn't work for some reason
-        respErr Http400, "Bad JSON.\n"
+      except JsonError:
+        respErr Http400, "Bad JSON, must be an array of strings.\n"
 
       # create needed directories if they don't exist already
       let directory = cfg.uploadDir & user.username & "/"
