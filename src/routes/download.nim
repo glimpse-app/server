@@ -41,7 +41,7 @@ proc createDownloadRoutes*() =
 
       var seqOfFiles = @[newFile()]
       try:
-        db.select(seqOfFiles, """"File".owner = $1""", user.id)
+        db.selectOneToMany(user, seqOfFiles, "owner")
       except NotFoundError:
         respErr Http404, "No file exists.\n"
 

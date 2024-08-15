@@ -91,7 +91,7 @@ proc createDeletionRoutes*(cfg: Cfg) =
 
       var listOfFiles = @[newFile()]
       try:
-        db.select(listOfFiles, """"File".owner = $1""", user)
+        db.selectOneToMany(user, listOfFiles, "owner")
       except NotFoundError: # this error does not occur even if no files exist
         respErr Http404, "Files do not exist.\n"
 
