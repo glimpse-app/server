@@ -9,9 +9,17 @@ type File* = ref object of Model
   name*: string
   tags*: string #? This is a temporary hack should be `seq[string]` or `JsonNode` instead
 
-              # creates a new file object and sets default values, recommended by the norm documentation
+type FileInfo* = ref object
+  name*: string
+  tags*: string
+
+    # creates a new file object and sets default values, recommended by the norm documentation
 proc newFile*(user: User = newUser(), path: string = "", name: string = "",
     tags: string = ""): File =
   inc user.fileCount
   debug "Creating new file.\n"
   File(owner: user, path: path, name: name, tags: tags)
+
+proc getFileInfo*(file: File = newFile()): FileInfo =
+  debug "getting file info.\n"
+  FileInfo(name: file.name, tags: file.tags)

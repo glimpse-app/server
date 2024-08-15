@@ -1,5 +1,6 @@
-import std/[strutils, os, httpclient, strformat, with, logging]
+import std/[strutils, os, httpclient, strformat, logging]
 import jester
+import jsony
 import norm/model
 import norm/postgres except error
 import ../types/[users, files]
@@ -22,47 +23,45 @@ proc createDeletionRoutes*(cfg: Cfg) =
     #[
       request parameters:
         token          -  string         -  required via header
-      returns: JSON
     ]#
     delete "/api/v1/userCompletely":
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
+
 
       discard waitFor purgeUserFiles(H"Authorization")
       db.delete(user)
 
       info "User deactivated.\n" & reqInfo
-      resp Http200, "[]\n", "application/json"
+      resp200
 
     #[
       request parameters:
         token          -  string         -  required via header
-      returns: JSON
     ]#
     delete "/api/v1/user":
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       db.delete(user)
 
       info "User account deleted.\n" & reqInfo
-      resp Http200, "[]\n", "application/json"
+      resp200
 
     #[
       request parameters:
         token          -  string         -  required via header
         name           -  string         -  required via header
-      returns: JSON
     ]#
     delete "/api/v1/file":
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       var file = newFile()
       try:
@@ -70,31 +69,25 @@ proc createDeletionRoutes*(cfg: Cfg) =
       except NotFoundError:
         respErr Http404, "File does not exist.\n"
 
+      var fileInfo = getFileInfo(file)
+
       removeFile(file.path)
       db.delete(file)
       dec user.fileCount
       db.update(user)
 
-      var userFileCount: string
-      with userFileCount:
-        add "[{"
-        add("\"fileCount\": \"" & $user.fileCount & "\"")
-        add "}]"
-
       info "Deleted file.\n" & reqInfo
-      resp Http200, userFileCount & "\n", "application/json"
+      resp200 fileInfo.toJson()
 
     #[
       request parameters:
         token          -  string         -  required via header
-      returns
-        200            -  deleted all of the user's file from db and filesystem only
     ]#
     delete "/api/v1/files":
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       var listOfFiles = @[newFile()]
       try:
@@ -110,4 +103,4 @@ proc createDeletionRoutes*(cfg: Cfg) =
       removeDir(cfg.uploadDir & user.username & "/")
 
       info "Deleting user's files.\n" & reqInfo
-      resp Http200, "[]\n", "application/json"
+      resp200

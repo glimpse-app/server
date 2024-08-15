@@ -1,5 +1,6 @@
-import std/[strutils, os, with, logging]
+import std/[strutils, os, logging]
 import jester
+import jsony
 import norm/postgres except error
 import ../types/[users, files]
 import ../[database, helpers]
@@ -17,7 +18,7 @@ proc createUpdateRoutes*() =
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       let
         oldName = H"Old name"
@@ -44,12 +45,5 @@ proc createUpdateRoutes*() =
       file.name = newName
       db.update(file)
 
-      var fileInfo: string
-      with fileInfo:
-        add "[{"
-        add("\"name\": \"" & file.name & "\",")
-        add("\"tags\": \"" & file.tags & "\"")
-        add "}]"
-
       info "File renamed.\n" & reqInfo
-      resp Http200, fileInfo & "\n", "application/json"
+      resp200 getFileInfo(file).toJson()

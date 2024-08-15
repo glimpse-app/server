@@ -46,7 +46,7 @@ fi; printf "%b\n" "$CLR";
 
 ENDPOINT="/api/v1/newSession"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
-MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".[0].token" | tr -d '"')
+MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".token" | tr -d '"')
 
 curl --show-error --fail-with-body --request GET http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN"
@@ -59,7 +59,7 @@ fi; printf "%b\n" "$CLR";
 
 ENDPOINT="/api/v1/newFile"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
-MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".[0].token" | tr -d '"')
+MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".token" | tr -d '"')
 
 curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN" -F "file=@image.png"
@@ -155,7 +155,7 @@ fi; printf "%b\n" "$CLR";
 
 ENDPOINT="/api/v1/userCompletely"
 printf "\n%bTest: $ENDPOINT%b\n" "$BLD" "$CLR"
-MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".[0].token" | tr -d '"')
+MKUSER; TOKEN=$(curl --show-error --fail-with-body --request POST http://"$BINDADDR":"$PORT""/api/v1/newUser" -d "username=$TESTUSER" -d "password=$PASSWORD" -d "email=$TESTUSER@example.xyz" | jq ".token" | tr -d '"')
 
 curl --show-error --fail-with-body --request DELETE http://"$BINDADDR":"$PORT""$ENDPOINT" \
   -H "Authorization: $TOKEN"

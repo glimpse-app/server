@@ -1,4 +1,4 @@
-import std/[strutils, os, json, asyncdispatch, httpclient, with, logging]
+import std/[strutils, os, json, asyncdispatch, httpclient, logging]
 
 import jester
 import checksums/sha3

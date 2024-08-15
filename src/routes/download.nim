@@ -1,5 +1,6 @@
 import std/[strutils, logging]
 import jester
+import jsony
 import norm/postgres except error
 import ../types/[users, files]
 import ../[database, helpers]
@@ -17,7 +18,7 @@ proc createDownloadRoutes*() =
 
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       var file = newFile()
       try:
@@ -31,26 +32,19 @@ proc createDownloadRoutes*() =
     #[
       request parameters:
         token          -  string         -  required via header
-      returns: JSON
     ]#
     get "/api/v1/listOfAllFiles":
       debug "Endpoint used.\n" & reqInfo
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       var listOfFiles = @[newFile()]
       try:
         db.select(listOfFiles, """"File".owner = $1""", user.id)
       except NotFoundError:
-        respErr Http404, "Files does not exist.\n"
-
-      var allFiles: string
-
-      for file in listOfFiles:
-        allFiles = allFiles & "{" & "\"name\": \"" & file.name &
-            "\", \"tags\": " & file.tags & "},"
-      allFiles = "[" & allFiles[0..^2] & "]" # trim last comma
+        respErr Http404, "No file exists.\n"
 
       info "List user's file.\n" & reqInfo
-      resp Http200, allFiles & "\n", "application/json"
+      resp200 listOfFiles.toJson() # TODO: create new type without unneeded members, read data to it then resp as json. if all else fails -> edit File type to not include owner json in it? Maybe make user.password private?
+

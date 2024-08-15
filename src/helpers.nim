@@ -14,3 +14,6 @@ template respErr*(s: string): untyped =
 template respErr*(e: HttpCode, s: string): untyped =
   error s & reqInfo
   resp e, s
+
+template resp200*(json: string = ""): untyped =
+  resp Http200, json & "\n", "application/json"

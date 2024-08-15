@@ -1,5 +1,6 @@
-import std/[strutils, os, json, with, logging]
+import std/[strutils, os, json, logging]
 import jester
+import jsony
 import norm/model
 import norm/postgres except error
 import ../types/[users, files]
@@ -13,14 +14,13 @@ proc createUploadRoutes*(cfg: Cfg) =
         file           -  string/binary  -  required
         token          -  string         -  required via header
         tags           -  JSON           -  optinal
-      returns: JSON
     ]#
     post "/api/v1/newFile":
       debug "Endpoint used.\n" & reqInfo
       # fills the new `user` var with saved user data from database
       var user = newUser()
       if not db.validToken(user, H"Authorization"):
-        resp Http403, "Invalid token.\n"
+        respErr "Invalid token.\n"
 
       # pull request form data arguments
       let fileData = request.formData["file"].body
@@ -55,11 +55,6 @@ proc createUploadRoutes*(cfg: Cfg) =
 
       # write the file from memory
       writeFile(filePath, fileData)
-      var userFileCount: string
-      with userFileCount:
-        add "[{"
-        add("\"fileCount\": \"" & $user.fileCount & "\"")
-        add "}]"
 
       info "File uploaded.\n" & reqInfo
-      resp Http200, userFileCount & "\n", "application/json"
+      resp200 getFileInfo(file).toJson()

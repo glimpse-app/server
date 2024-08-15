@@ -1,5 +1,6 @@
-import std/[strutils, with, logging]
+import std/[strutils, logging]
 import jester
+import jsony
 import norm/model
 import norm/postgres except error
 import checksums/sha3
@@ -13,7 +14,6 @@ proc createAuthenticationRoutes*() =
         username       -  string   -  required
         email          -  string   -  required
         password       -  string   -  required
-      returns: JSON
     ]#
     post "/api/v1/newUser":
       debug "Endpoint used.\n" & reqInfo
@@ -38,18 +38,8 @@ proc createAuthenticationRoutes*() =
       var user = newUser(@"username", @"email", @"password")
       db.insert(user)
 
-      var userProfile: string
-      with userProfile:
-        add "[{"
-        add("\"username\": \"" & user.username & "\",")
-        add("\"email\": \"" & user.email & "\",")
-        add("\"password\": \"" & user.password & "\",")
-        add("\"token\": \"" & user.token & "\",")
-        add("\"fileCount\": \"" & $user.fileCount & "\"")
-        add "}]"
-
       info "User created.\n" & reqInfo
-      resp Http200, userProfile & "\n", "application/json"
+      resp200 user.toJson()
 
     #[
       request parameters:
@@ -57,7 +47,6 @@ proc createAuthenticationRoutes*() =
                       OR
         username       -  string   -  required via header
         password       -  string   -  required via header
-      returns: JSON
     ]#
     get "/api/v1/newSession":
       debug "Endpoint used.\n" & reqInfo
@@ -66,7 +55,7 @@ proc createAuthenticationRoutes*() =
 
       if not H"Authorization".isEmptyOrWhitespace():
         if not db.validToken(user, H"Authorization"):
-          resp Http403, "Invalid token.\n"
+          respErr "Invalid token.\n"
 
         db.generateToken(user)
 
@@ -74,18 +63,12 @@ proc createAuthenticationRoutes*() =
         try:
           db.select(user, """"User".username = $1""", H"Username")
         except NotFoundError:
-          respErr"Incorrect username or password.\n" # fails if username is wrong but mentions password to obfuscates if a user exists or not
+          respErr "Incorrect username or password.\n" # fails if username is wrong but mentions password to obfuscates if a user exists or not
         if user.password == $Sha3_512.secureHash($H"Password"):
           db.generateToken(user)
         else:
-          respErr"Incorrect username or password.\n" # fails if password is wrong but mentions username to obfuscates if a user exists or not
-
-      var userToken: string
-      with userToken:
-        add "[{"
-        add("\"token\": \"" & user.token & "\"")
-        add "}]"
+          respErr "Incorrect username or password.\n" # fails if password is wrong but mentions username to obfuscates if a user exists or not
 
       info "Replaced token.\n" & reqInfo
-      resp Http200, userToken & "\n", "application/json"
+      resp200 user.token.toJson()
 
