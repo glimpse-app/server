@@ -10,6 +10,7 @@ type User* = ref object of Model
   password*: string # sha3-512 hash
   token* {.unique.}: string
   fileCount*: int = 0
+  # files*: seq[files.File] #! The compiler does not like this, issue #32
 
 # checks if the provided token exists in the database
 proc validToken*(db: DbConn, user: var User, token: string): bool =
