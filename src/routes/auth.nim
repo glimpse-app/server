@@ -70,5 +70,5 @@ proc createAuthenticationRoutes*() =
           respErr "Incorrect username or password.\n" # fails if password is wrong but mentions username to obfuscates if a user exists or not
 
       info "Replaced token.\n" & reqInfo
-      resp200 user.token.toJson()
+      resp200 user.toJson()
 
